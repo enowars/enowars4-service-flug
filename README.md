@@ -57,14 +57,22 @@ two consecutive functions would use the same stack => we keak infromation from t
 
 ## database
 
+### user database
+Every user has it's own file with username and password in the first line.
+In the second line is a list of tickets
+
     <user1> <password1>
     <user2> <password2>
     
 Is there a better way to store usernames and passwords?
 
+### ticket databse
+
+Yet to be defined
+
+#### ?
 Should we hash password so players don't leak their own passwords(yeah people are that stupid)?
 
-Maybe use files
 
 
 ## checker
