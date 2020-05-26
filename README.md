@@ -67,9 +67,14 @@ Should we hash password so players don't leak their own passwords(yeah people ar
 Maybe use files
 
 
+## checker
+
+In progress
 
 ## Still to define and do
 
+* socat
+* docker (khm khm)
 * remote compiling
 
 
