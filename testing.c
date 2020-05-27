@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 int main(){
-
-    int a = 10;
-    printf("%d",a);
+    char buff[201];
+    scanf("%200s",buff);
+    printf("%s",buff);
 }
