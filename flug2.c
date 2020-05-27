@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
+
 #define BUFF_LEN 200
 #define STR_(X)
 #define STR(X) STR_(X)
@@ -52,7 +53,7 @@ long random_64_bit(){
     srand(time(NULL));
     uint64_t random_num = (((uint64_t) rand() <<  0) & 0x00000000FFFFFFFFull) | (((uint64_t) rand() << 32) & 0xFFFFFFFF00000000ull);
     return random_num;
-    
+
 }
 
 int count_lines(char path[]){
@@ -270,7 +271,7 @@ int main(){
             register_user();
 
         } else if(S[0] == '3'){
-            puts("your could view a ticket here but it is not implemented");
+            view_ticket();
 
         } else if(S[0] == '4'){
             puts("Bye");
