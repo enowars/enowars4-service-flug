@@ -50,7 +50,8 @@ int register_user(){
 
 long random_64_bit(){
     //TODO: should be replace with 64-bit rand()
-    srand(time(NULL));
+    sleep(1);
+    srand(time(NULL) * getpid());
     uint64_t random_num = (((uint64_t) rand() <<  0) & 0x00000000FFFFFFFFull) | (((uint64_t) rand() << 32) & 0xFFFFFFFF00000000ull);
     return random_num;
 
@@ -106,7 +107,6 @@ int add_ticket(char username[]){
         puts("Enter the content of your new ticket");
         getc(stdin); //flush stdin so we can use fgets insted of scanf since scanf cant take in spaces.
         fgets(ticket_text,200,stdin);
-
         fprintf(tickets_file,"%s\n",ticket_text);
         fclose(tickets_file);
 
