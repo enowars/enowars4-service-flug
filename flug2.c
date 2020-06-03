@@ -4,16 +4,17 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
+#include <fcntl.h>
 
 #define BUFF_LEN 200
 #define STR_(X)
 #define STR(X) STR_(X)
 #define MAXDATA 1000
+#define llong long long
 
 
 char mystrcmp(char str1[], char str2[]){
     int len=strlen(str1)+1;
-    
     
     for (int i=0; i<len; i++){
         if (str1[i]!=str2[i]){
@@ -48,13 +49,15 @@ int register_user(){
 }
 
 
-long random_64_bit(){
-    //TODO: should be replace with 64-bit rand()
-    sleep(1);
-    srand(time(NULL) * getpid());
-    uint64_t random_num = (((uint64_t) rand() <<  0) & 0x00000000FFFFFFFFull) | (((uint64_t) rand() << 32) & 0xFFFFFFFF00000000ull);
-    return random_num;
-
+unsigned long long random_64_bit(){
+    int fd;
+    unsigned long long  rand;
+    
+    fd = open("/dev/urandom", O_RDONLY);
+    read(fd, &rand, sizeof(unsigned long long));
+    close(fd);
+    
+    return rand;
 }
 
 int count_lines(char path[]){
@@ -78,7 +81,7 @@ int count_lines(char path[]){
 }
 
 int add_ticket(char username[]){
-    uint64_t random = random_64_bit();
+    unsigned long long  random = random_64_bit();
     char path[BUFF_LEN+7];
 
     strcpy(path,"users/");
@@ -90,14 +93,14 @@ int add_ticket(char username[]){
 
         FILE * userfile = fopen(path,"a+");
 
-        fprintf(userfile,"%d %ld\n",lines,random);
+        fprintf(userfile,"%d %llu\n",lines,random);
         printf("loaded a new ticket on index %d\n",lines);
         fclose(userfile);
 
         char tickets_path[BUFF_LEN +7];
         char stringify_random[20];
 
-        sprintf(stringify_random,"%ld",(uint64_t)random);
+        sprintf(stringify_random,"%llu",(unsigned long long)random);
         strcpy(tickets_path,"tickets/");
         strcat(tickets_path,stringify_random);
 
