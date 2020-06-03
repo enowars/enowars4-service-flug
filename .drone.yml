@@ -8,7 +8,7 @@ name: default
 
 steps:
 
-- name: publish-docker
+- name: service-flug
 
   image: plugins/docker
 
@@ -18,7 +18,7 @@ steps:
 
     dockerfile: path/to/your/Dockerfile
 
-    repo: registry:5000/<service-name>
+    repo: registry:5000/service-flug
 
     registry: registry:5000
 
