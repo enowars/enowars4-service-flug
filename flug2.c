@@ -12,6 +12,22 @@
 #define MAXDATA 1000
 #define llong long long
 
+int sanitize(char* str1){
+    int len1=strlen(str1)+1;
+    char* str2=malloc(len1);
+    
+    int i2=0;
+    for(int i1=0; i1<len1; i1++){
+        if(!isspace(str1[i1])){
+            str2[i2]=str1[i1];
+            i2++;
+        }
+    }
+    
+    strcpy(str1, str2);
+    
+    return -1;
+}
 
 char mystrcmp(char str1[], char str2[]){
     int len=strlen(str1)+1;
@@ -69,14 +85,13 @@ int count_lines(char path[]){
         puts("Sorry, this user doesn't exist"); 
         return -1; 
     } 
-  
 
     for (c = getc(fp); c != EOF; c = getc(fp)) {
         if (c == '\n')  
             count = count + 1; 
     }
 
-    fclose(fp); 
+    fclose(fp);
     return count; 
 }
 
@@ -207,6 +222,10 @@ int login(){
     puts("Please input your password:");
     scanf("%" STR(BUFF_LEN) "s", password_put_in);
     
+    if(!sanitize(username_put_in) || !sanitize(password_put_in)){
+        exit();
+    }
+    
     char user_file_path[BUFF_LEN + 7];
     strcpy(user_file_path, "users/");
     strcat(user_file_path, username_put_in);
@@ -227,7 +246,8 @@ int login(){
     }
     //TODO: nov meni za add ticket
     //TODO: while loop za logiko ko si loged in idk.
-    //TODO: SOCAT
+    
+    //TODO meybi v svojo funkcijo
     char Input[8];
     while (1){
         print_menu2(username);
