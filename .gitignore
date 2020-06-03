@@ -1,0 +1,4 @@
+#we ignore this
+service/users/*
+service/tickets/*
+service/a.out
