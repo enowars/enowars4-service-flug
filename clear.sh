@@ -1,0 +1,3 @@
+
+rm users/*
+rm tickets/*

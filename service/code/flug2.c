@@ -179,12 +179,12 @@ int print_menu1(){
 
 int print_menu2(char usename[]){
     puts("\n");
-    printf("wellcome %s\n",usename);
+    printf("welcome %s\n",usename);
     puts("The menu");
     puts("================");
     puts("1: buy ticket");
     puts("2: view my tickets");
-    puts("3: view tickets");
+    puts("3: view ticket");
     puts("4: logout");
     puts("================");
 

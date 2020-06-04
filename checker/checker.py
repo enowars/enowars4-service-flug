@@ -89,11 +89,11 @@ class FlugChecker(BaseChecker):
             print('Puting in noise with username: {} and password: {}'.format(username,password))
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"2")
-            p.sendlineafter(b"Please input your new username:\n",bytes(password,'ascii'))
+            p.sendlineafter(b"Please input your new username:\n",bytes(username,'ascii'))
             p.sendlineafter(b"Please input your password:\n",bytes(password,'ascii'))
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"1")
-            p.sendlineafter(b"Please input your username:\n",bytes(password,'ascii'))
+            p.sendlineafter(b"Please input your username:\n",bytes(username,'ascii'))
             p.sendlineafter(b"Please input your password:\n",bytes(password,'ascii'))
             p.recvuntil(b"================\n")   
             p.sendlineafter(b"================\n",b"1")
@@ -133,7 +133,7 @@ class FlugChecker(BaseChecker):
             p.recvline()
             noise2 = p.recvline().decode('ascii') 
             print('Got noise: {}'.format(noise2))
-            print('Extepcted noise: {}'.format(self.noise))                 
+            print('Expected noise: {}'.format(self.noise))                 
             if noise2.strip() != self.noise.strip():
                 raise EnoException("Noises dont match")
         except:
@@ -150,6 +150,72 @@ class FlugChecker(BaseChecker):
                 the preferred way to report errors in the service is by raising an appropriate enoexception
         """
     def havoc(self):  # type: () -> None
+        try:
+            self.putnoise()
+            self.getnoise()
+        except:
+            raise EnoException("Service mumbles")
+
+        #p = remote(self.address,port)
+        p = remote('localhost',1337)
+        pass_test = True
+
+
+        #we create a new ticket with current noise 
+        test_ticket = self.team_db[self.noise][2]
+        test_value = self.noise 
+
+        # we login using current noise user
+        test_user = self.team_db[self.noise][0]
+        test_pass = self.team_db[self.noise][1]
+
+        must_be_in_menu1 = ['menu','login','register','view ticket','exit']
+        must_be_in_view_ticket_menu = ['ticket','id']
+        must_be_in_menu_when_logged_in = ['buy ticket','view my tickets','view ticket','logout']
+
+        menu1 = p.recv(200).decode('ascii').lower()
+        for elem in must_be_in_menu1:
+            if elem not in menu1:
+                print('failed first test: \'{}\' not in menu'.format(elem))
+                pass_test = False
+
+        sleep(.2)
+        p.sendline(b'3')
+        menu_after_view_ticket_global = p.recv(200).decode('ascii').lower()
+
+
+        for elem in must_be_in_view_ticket_menu:
+            if elem not in menu_after_view_ticket_global:
+                print('failed second test: \'{}\' not in menu'.format(elem))
+                pass_test = False
+        sleep(.2)
+
+        p.sendline(test_ticket)
+        p.recvline()
+        retrieve_noise = p.recv(200).decode('ascii').strip()
+        print('test value: {}'.format(test_value))
+        print('retrv: {}'.format(retrieve_noise))
+        if False:
+            print('failed third test: \'{}\' noises didnt match'.format(retrieve_noise))
+            pass_test = False
+        sleep(.2)
+
+        p.sendlineafter(b"================\n",b'1')
+        p.sendlineafter(b'Please input your username:\n',bytes(test_user,'ascii'))
+        p.sendlineafter(b'Please input your password:\n',bytes(test_pass,'ascii'))
+        logged_in_menu =p.recv(200).decode('ascii').lower()
+        print('menu: {}'.format(logged_in_menu))
+        for elem in must_be_in_menu_when_logged_in:
+            if elem not in logged_in_menu:
+                print('failed last test: \'{}\' not in menu'.format(elem))
+                pass_test = False
+
+        if not pass_test:
+            print('ni slo skoz')
+            raise EnoException('Service mumbles')
+        else:
+            print('we good!')
+
         """
         This method unleashes havoc on the app -> Do whatever you must to prove the service still works. Or not.
         On error, raise an EnoException.
@@ -158,18 +224,14 @@ class FlugChecker(BaseChecker):
                 If nothing is returned, the service status is considered okay.
                 The preferred way to report Errors in the service is by raising an appropriate EnoException
         """
-        self.info("I wanted to inform you: I'm  running <3")
-        self.http_get(
-            "/"
-        )  # This will probably fail, depending on what params you give the script. :)
 
     def exploit(self ):
         #1st vuln
         p = remote(self.address,port)
-        p.recvuntil("================\n")
-        p.sendlineafter("================\n",'1')
-        p.sendlineafter("Please input your username:\n",str(username))
-        p.sendlineafter("Please input your password:\n",'\x00')
+        p.recvuntil(b"================\n")
+        p.sendlineafter(b"================\n",b'1')
+        p.sendlineafter(b"Please input your username:\n",bytes(username,'ascii'))
+        p.sendlineafter(b"Please input your password:\n",'\x00')
         p.recvline() #TODO: odstrani ko urban popravi svoje randomly placed printfe
         p.recv(2) 
         check_line = p.recvline()
