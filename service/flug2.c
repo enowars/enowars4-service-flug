@@ -34,7 +34,7 @@ char mystrcmp(char str1[], char str2[]){
     
     for (int i=0; i<len; i++){
         if (str1[i]!=str2[i]){
-            printf("zadnji char %c\n", str1[i]);
+            //printf("zadnji char %c\n", str1[i]);
             return str1[i];
         }
     }
