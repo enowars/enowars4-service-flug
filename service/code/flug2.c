@@ -5,6 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include <fcntl.h>
+#include <ctype.h>
 
 #define BUFF_LEN 200
 #define STR_(X)
@@ -14,7 +15,7 @@
 
 int sanitize(char* str1){
     int len1=strlen(str1)+1;
-    char* str2=malloc(len1);
+    char* str2= (char *)malloc(len1);
     
     int i2=0;
     for(int i1=0; i1<len1; i1++){
@@ -223,7 +224,7 @@ int login(){
     scanf("%" STR(BUFF_LEN) "s", password_put_in);
     
     if(!sanitize(username_put_in) || !sanitize(password_put_in)){
-        exit();
+        exit(0);
     }
     
     char user_file_path[BUFF_LEN + 7];
