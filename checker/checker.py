@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-#socat TCP-LISTEN:1337,nodelay.reuseaddr,fork EXEC:"stdbuf -i0 -o0 -e0 ./a.out"
+#socat TCP-LISTEN:1337,nodelay,reuseaddr,fork EXEC:"stdbuf -i0 -o0 -e0 ./a.out"
 from pwn import *
 import sys
 import time
 from enochecker import *
+import string
+from random import randrange
 
 class Flug_Checker(BaseChecker):
 
@@ -17,13 +19,36 @@ class Flug_Checker(BaseChecker):
     noise_count = 1
     havoc_count = 1
     port = 1337
+
+
+    def gen_user():
+        source = list(string.ascii_lowercase)
+        username =''
+        for num in range(25):
+            rand_int = randrange(25)
+            username += source[rand_int]
+        return username
+
+    def gen_password():
+        source = list(string.ascii_lowercase)
+        password =''
+        for num in range(25):
+            rand_int = randrange(25)
+            password += source[rand_int]
+        return password
+
+
+
     def putflag(self):  # type: () -> None
         try:
             p = remote(self.address,port)
+            p = process("")
+            logger.debug("Connection succeded")
         except:
-             raise enochecker.OfflineException
-             logger.debug("Connection to the service failed")
+            raise enochecker.OfflineException
+            logger.debug("Connection to the service failed")
         try:
+            logger.debug("Reistering a user with username: {} and password {}".format(self.username,self.password))
             p.recvuntil("================\n")
             p.sendlineafter("================\n","2")
             p.sendlineafter("Please input your new username:\n",str(self.username))
@@ -36,12 +61,14 @@ class Flug_Checker(BaseChecker):
             p.sendlineafter("================\n","1")
             time.sleep(.1)
             p.recvuntil("Enter the content of your new ticket\n")
+            logger.debug("Putting in flag: {}".format(self.flag))
             p.send(str(self.flag))
             time.sleep(.1)
             p.recvuntil("================\n")
             p.sendlineafter("================\n","2")
             stdo = p.recvline()
             self.ticket_id = p.recvline().split(' ')[1]
+
 
             flag_count +=1
         except:
@@ -51,8 +78,8 @@ class Flug_Checker(BaseChecker):
         try:
             p = remote(self.address,port)
         except:
-             raise enochecker.OfflineException
-             logger.debug("Connection to the service failed")
+            raise OfflineException
+            logger.debug("Connection to the service failed")
 
         try:
             p.recvuntil("================\n")
@@ -61,10 +88,10 @@ class Flug_Checker(BaseChecker):
             p.recvline()
             flag2 = p.recvline() 
             if flag2 != self.flag:
-                raise enochecker.BrokenServiceException("Service mumbels")
+                raise BrokenServiceException("Service mumbels")
 
         except:
-            raise enochecker.BrokenServiceException("getflag failed")
+            raise BrokenServiceException("getflag failed")
 
         if self.flag_idx == 0:
             if not self.team_db.get(sha256ify(self.flag), None) == self.flag:
@@ -86,8 +113,8 @@ class Flug_Checker(BaseChecker):
         try:
             p = remote(self.address,port)
         except:
-             raise enochecker.OfflineException
-             logger.debug("Connection to the service failed")
+            raise enochecker.OfflineException
+            logger.debug("Connection to the service failed")
         try:
             p.recvuntil("================\n")
             p.sendlineafter("================\n","2")
@@ -180,5 +207,3 @@ if __name__ == "__main__":
     run(Flug_Checker)
     # Example params could be: [StoreFlag localhost ENOFLAG 1 ENOFLAG 50 1]
     # exit(ExampleChecker(port=1337).run())
-
-
