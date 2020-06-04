@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-#socat TCP-LISTEN:1337,nodelay.reuseaddr,fork EXEC:"stdbuf -i0 -o0 -e0 ./a.out"
+#socat TCP-LISTEN:1337,nodelay,reuseaddr,fork EXEC:"stdbuf -i0 -o0 -e0 ./a.out"
 from pwn import *
 import sys
 import time
 from enochecker import *
+import string
+from random import randrange
 
 class Flug_Checker(BaseChecker):
 
@@ -17,6 +19,24 @@ class Flug_Checker(BaseChecker):
     noise_count = 1
     havoc_count = 1
     port = 1337
+    def gen_user():
+        source = list(string.ascii_lowercase)
+        username =''
+        for num in range(25):
+            rand_int = randrange(25)
+            username += source[rand_int]
+        return username
+
+    def gen_password():
+        source = list(string.ascii_lowercase)
+        password =''
+        for num in range(25):
+            rand_int = randrange(25)
+            password += source[rand_int]
+        return password
+
+
+
     def putflag(self):  # type: () -> None
         try:
             p = remote(self.address,port)
