@@ -53,8 +53,8 @@ int register_user(){
     puts("Please input your password:");
     scanf("%" STR(BUFF_LEN) "s", new_password);
     
-    char new_user_file[BUFF_LEN + 7];
-    strcpy(new_user_file, "users/");
+    char new_user_file[BUFF_LEN + 13];
+    strcpy(new_user_file, "../../users/");
     strcat(new_user_file, new_username);
     
     //prevert mormo če user že obstaja
@@ -98,9 +98,9 @@ int count_lines(char path[]){
 
 int add_ticket(char username[]){
     unsigned long long  random = random_64_bit();
-    char path[BUFF_LEN+7];
+    char path[BUFF_LEN+13];
 
-    strcpy(path,"users/");
+    strcpy(path,"../../users/");
     strcat(path,username);
 
     int lines = count_lines(path);
@@ -113,11 +113,11 @@ int add_ticket(char username[]){
         printf("loaded a new ticket on index %d\n",lines);
         fclose(userfile);
 
-        char tickets_path[BUFF_LEN +7];
+        char tickets_path[BUFF_LEN +13];
         char stringify_random[20];
 
         sprintf(stringify_random,"%llu",(unsigned long long)random);
-        strcpy(tickets_path,"tickets/");
+        strcpy(tickets_path,"../../tickets/");
         strcat(tickets_path,stringify_random);
 
         FILE * tickets_file = fopen(tickets_path,"w");
@@ -140,8 +140,8 @@ int view_ticket(){
     puts("Enter the unique id of your ticket");
     scanf("%20s",id);
 
-    char path[30];
-    strcpy(path,"tickets/");
+    char path[40];
+    strcpy(path,"../../tickets/");
     strcat(path,id);
 
     FILE * ticket = fopen(path,"r");
@@ -192,8 +192,8 @@ int print_menu2(char usename[]){
 
 
 int view_my_tickets(char username[]){
-    char path[BUFF_LEN + 8];
-    strcpy(path,"users/");
+    char path[BUFF_LEN + 14];
+    strcpy(path,"../../users/");
     strcat(path,username);
     FILE * tickets = fopen(path,"r");
 
@@ -227,8 +227,8 @@ int login(){
         exit(0);
     }
     
-    char user_file_path[BUFF_LEN + 7];
-    strcpy(user_file_path, "users/");
+    char user_file_path[BUFF_LEN + 13];
+    strcpy(user_file_path, "../../users/");
     strcat(user_file_path, username_put_in);
     
     
