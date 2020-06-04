@@ -15,7 +15,7 @@ def exploit(username,password):
 	menu1 = p.recv(200).decode('ascii').lower()
 	for elem in must_be_in_menu1:
 		if elem not in menu1:
-			print('failed first test: \'{}\' not in menu'.format(elem))
+			print('elem: \'{}\' not in menu'.format(elem))
 			pass_test = False
 
 	
@@ -25,16 +25,14 @@ def exploit(username,password):
 
 	for elem in must_be_in_view_ticket_menu:
 		if elem not in menu_after_view_ticket_global:
-			print('failed second test: {} not in menu'.format(elem))
 			pass_test = False
 
 	p.sendline(test_ticket)
-	p.recvline()
-	retrieve_noise = p.recv(200).decode('ascii').strip()
-	print('got noise: {}'.format(retrieve_noise))
-	if retrieve_noise != 'ENOFLAGENOFLAG=' or retrieve_noise == '':
-		print('failed last test: \'{}\' noises didnt match'.format(retrieve_noise))
-		pass_test = False
+	retrieve_noise = p.recv(200)
+
+	if retrieve_noise == test_va
+
+
 
 	if pass_test:
 		print('passed')
