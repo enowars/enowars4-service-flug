@@ -1,0 +1,10 @@
+version: '3.6'
+services:
+  flug:
+    build: .
+    volumes:
+      - ./users:/users
+      - ./tickets:/tickets
+      - ./code:/code
+    ports:
+      - 7478:7478
