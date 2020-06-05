@@ -1,61 +1,44 @@
 kind: pipeline
-
 type: docker
-
 name: default
 
-
-
 steps:
-
-- name: service-flug
-
+- name: publish-docker-service
   image: plugins/docker
-
   network_mode: registry-network
-
   settings:
-
-    dockerfile: path/to/your/Dockerfile
-
+    dockerfile: service/Dockerfile
     repo: registry:5000/service-flug
-
     registry: registry:5000
-
     insecure: true
 
-
+- name: publish-docker-checker
+  image: plugins/docker
+  network_mode: registry-network
+  settings:
+    dockerfile: checker/Dockerfile
+    repo: registry:5000/service-flug
+    registry: registry:5000
+    insecure: true
 
 < add validation and integration testing steps here >
 
-
-
 - name: trigger-vm-image-creation
-
   image: plugins/downstream
-
   settings:
-
     server: https://droneci.sect.tu-berlin.de
-
     token:
-
       from_secret: trigger_token
-
     fork: true
-
     repositories:
-
       - enowars/Enowars4DevOps@master
 
-
-
 trigger:
-
   branch:
-
   - master
-
   event:
-
   - push
+
+
+
+
