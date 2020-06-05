@@ -1,2 +1,2 @@
-git+https://github.com/domenukk/enochecker
+enochecker==0.1.0
 pwntools

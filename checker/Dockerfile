@@ -1,4 +1,4 @@
-FROM python:3.7-slim
+FROM python
 LABEL maintainer="ENOFLAG <mail@enoflag.de>"
 
 WORKDIR /checker

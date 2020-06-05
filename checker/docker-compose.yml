@@ -1,6 +1,4 @@
-version: '3'
+version: '3.3'
 services:
   flug-checker:
     build: .
-ports:
-  - "8000:8000"
