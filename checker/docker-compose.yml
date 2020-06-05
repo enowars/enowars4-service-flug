@@ -2,3 +2,8 @@ version: '3.3'
 services:
   flug-checker:
     build: .
+    ports:
+      - 7474:8000
+  
+  mongodb:
+    image: mongo
