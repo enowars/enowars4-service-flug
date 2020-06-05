@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #socat TCP-LISTEN:7478,nodelay,reuseaddr,fork EXEC:"stdbuf -i0 -o0 -e0 ./a.out"
-from pwn import *
+import pwnlib.tubes 
 import sys
 import time
 from enochecker import *
