@@ -1,9 +1,8 @@
 FROM ubuntu:latest
-RUN apt-get update && apt-get install -y make gcc
+RUN apt-get update && apt-get install -y make gcc socat
 
-COPY ./code /service-flug
-WORKDIR /service-flug
+#COPY ./code /code
+WORKDIR /code
 
-EXPOSE 7478
-
-CMD ["bash" "./start_service.sh" ]
+ENTRYPOINT [ "bash", "/code/startService.sh" ]
+#ENTRYPOINT [ "ls", "/code" ]
