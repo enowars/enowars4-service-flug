@@ -259,7 +259,7 @@ class FlugChecker(BaseChecker):
 
 
 
+app = FlugChecker.service
+
 if __name__ == "__main__":
-    run(FlugChecker)
-    # Example params could be: [StoreFlag localhost ENOFLAG 1 ENOFLAG 50 1]
-    # exit(ExampleChecker(port=1337).run())
+        run(FlugChecker)
