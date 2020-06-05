@@ -1,7 +1,7 @@
 # enowars4-service-flug
 
 Service by
-* Urban SUhadolnik (Lightning5)
+* Urban Suhadolnik (Lightning5)
 * Aleks(NOx)
 
 
