@@ -16,12 +16,13 @@ class FlugChecker(BaseChecker):
 
 
     def putflag(self):  # type: () -> None
+        port = 1337
         username = self.gen_user()
         password = self.gen_password()
         try:
             print('Connecting ...')
-            #p = remote(self.address,port)
-            p= remote('localhost',1337)
+            p = remote(self.address,port)
+            #p= remote('localhost',1337)
             print("Connection succeded")
         except:
             raise EnoException("Unable to connect to the service at putflag")
@@ -52,10 +53,11 @@ class FlugChecker(BaseChecker):
             raise EnoException("Put flag failed")
 
     def getflag(self):  # type: () -> None
+        port = 1337
         try:
             print('Connecting ...')
-            #p = remote(self.address,port)
-            p= remote("localhost",1337)
+            p = remote(self.address,port)
+            #p= remote("localhost",1337)
             print("Connection succeded")
         except:
             raise EnoException("Connection failed at getflag")
@@ -76,12 +78,13 @@ class FlugChecker(BaseChecker):
             raise EnoException("Unable to put flag in the service")
 
     def putnoise(self):  # type: () -> None
+        port = 1337
         username = self.gen_user()
         password = self.gen_password()
         try:
             print('Connecting ...')
-            #p = remote(self.address,port)
-            p = remote('localhost',1337)
+            p = remote(self.address,port)
+            #p = remote('localhost',1337)
             print("Connection succeded")
         except:
             raise EnoException("Connection failed at put noise")
@@ -116,10 +119,11 @@ class FlugChecker(BaseChecker):
         self.team_db["noise"] = self.noise
 
     def getnoise(self):  # type: () -> None
+        port = 1337
         try:
             print('Connecting ...')
-            #p = remote(self.address,port)
-            p= remote("localhost",1337)
+            p = remote(self.address,port)
+            #p= remote("localhost",1337)
             print("Connection succeded")
         except:
              raise EnoException("Connection at getnoise failed")
@@ -150,14 +154,15 @@ class FlugChecker(BaseChecker):
                 the preferred way to report errors in the service is by raising an appropriate enoexception
         """
     def havoc(self):  # type: () -> None
+        port = 1337
         try:
             self.putnoise()
             self.getnoise()
         except:
             raise EnoException("Service mumbles")
 
-        #p = remote(self.address,port)
-        p = remote('localhost',1337)
+        p = remote(self.address,port)
+        #p = remote('localhost',1337)
         pass_test = True
 
 
@@ -220,6 +225,7 @@ class FlugChecker(BaseChecker):
         """
 
     def exploit(self ):
+        port = 1337
         #1st vuln
         p = remote(self.address,port)
         p.recvuntil(b"================\n")
