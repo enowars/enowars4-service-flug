@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#socat TCP-LISTEN:1337,nodelay,reuseaddr,fork EXEC:"stdbuf -i0 -o0 -e0 ./a.out"
+#socat TCP-LISTEN:7478,nodelay,reuseaddr,fork EXEC:"stdbuf -i0 -o0 -e0 ./a.out"
 from pwn import *
 import sys
 import time
@@ -12,17 +12,17 @@ class FlugChecker(BaseChecker):
     flag_count = 1
     noise_count = 1
     havoc_count = 1
-    port = 1337
+    port = 7478
 
 
     def putflag(self):  # type: () -> None
-        port = 1337
+        port = 7478
         username = self.gen_user()
         password = self.gen_password()
         try:
             print('Connecting ...')
             p = remote(self.address,port)
-            #p= remote('localhost',1337)
+            #p= remote('localhost',7478)
             print("Connection succeded")
         except:
             raise EnoException("Unable to connect to the service at putflag")
@@ -53,11 +53,11 @@ class FlugChecker(BaseChecker):
             raise EnoException("Put flag failed")
 
     def getflag(self):  # type: () -> None
-        port = 1337
+        port = 7478
         try:
             print('Connecting ...')
             p = remote(self.address,port)
-            #p= remote("localhost",1337)
+            #p= remote("localhost",7478)
             print("Connection succeded")
         except:
             raise EnoException("Connection failed at getflag")
@@ -78,13 +78,13 @@ class FlugChecker(BaseChecker):
             raise EnoException("Unable to put flag in the service")
 
     def putnoise(self):  # type: () -> None
-        port = 1337
+        port = 7478
         username = self.gen_user()
         password = self.gen_password()
         try:
             print('Connecting ...')
             p = remote(self.address,port)
-            #p = remote('localhost',1337)
+            #p = remote('localhost',7478)
             print("Connection succeded")
         except:
             raise EnoException("Connection failed at put noise")
@@ -119,11 +119,11 @@ class FlugChecker(BaseChecker):
         self.team_db["noise"] = self.noise
 
     def getnoise(self):  # type: () -> None
-        port = 1337
+        port = 7478
         try:
             print('Connecting ...')
             p = remote(self.address,port)
-            #p= remote("localhost",1337)
+            #p= remote("localhost",7478)
             print("Connection succeded")
         except:
              raise EnoException("Connection at getnoise failed")
@@ -154,7 +154,7 @@ class FlugChecker(BaseChecker):
                 the preferred way to report errors in the service is by raising an appropriate enoexception
         """
     def havoc(self):  # type: () -> None
-        port = 1337
+        port = 7478
         try:
             self.putnoise()
             self.getnoise()
@@ -162,7 +162,7 @@ class FlugChecker(BaseChecker):
             raise EnoException("Service mumbles")
 
         p = remote(self.address,port)
-        #p = remote('localhost',1337)
+        #p = remote('localhost',7478)
         pass_test = True
 
 
@@ -225,7 +225,7 @@ class FlugChecker(BaseChecker):
         """
 
     def exploit(self ):
-        port = 1337
+        port = 7478
         #1st vuln
         p = remote(self.address,port)
         p.recvuntil(b"================\n")

@@ -4,6 +4,6 @@ RUN apt-get update && apt-get install -y make gcc
 COPY ./code /service-flug
 WORKDIR /service-flug
 
-EXPOSE 1337
+EXPOSE 7478
 
-CMD ["./start_service.sh" ]
+CMD ["bash" "./start_service.sh" ]
