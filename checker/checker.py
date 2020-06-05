@@ -191,20 +191,14 @@ class FlugChecker(BaseChecker):
         sleep(.2)
 
         p.sendline(test_ticket)
-        p.recvline()
-        retrieve_noise = p.recv(200).decode('ascii').strip()
-        print('test value: {}'.format(test_value))
-        print('retrv: {}'.format(retrieve_noise))
-        if False:
-            print('failed third test: \'{}\' noises didnt match'.format(retrieve_noise))
-            pass_test = False
-        sleep(.2)
 
         p.sendlineafter(b"================\n",b'1')
         p.sendlineafter(b'Please input your username:\n',bytes(test_user,'ascii'))
         p.sendlineafter(b'Please input your password:\n',bytes(test_pass,'ascii'))
-        logged_in_menu =p.recv(200).decode('ascii').lower()
-        print('menu: {}'.format(logged_in_menu))
+        logged_in_menu =p.recv(130).decode('ascii').lower()
+        logged_in_menu +=p.recv(130).decode('ascii').lower()
+        print('+++++++++++\nmenu: {}\n+++++++++++++'.format(logged_in_menu))
+        sleep(.3)
         for elem in must_be_in_menu_when_logged_in:
             if elem not in logged_in_menu:
                 print('failed last test: \'{}\' not in menu'.format(elem))
