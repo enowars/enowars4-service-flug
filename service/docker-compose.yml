@@ -7,4 +7,4 @@ services:
       - ./tickets:/tickets
       - ./code:/code
     ports:
-      - 7478
+      - 7478:7478
