@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdint.h>
-#include <string.h>
 #include <time.h>
 #include <fcntl.h>
 #include <ctype.h>
@@ -12,6 +11,45 @@
 #define STR(X) STR_(X)
 #define MAXDATA 1000
 #define llong long long
+
+int strlen(char str[]){
+    int i=0;
+    while(str[i] != '\0'){
+        i++;
+    }
+    
+    return i;
+}
+
+char strcmp(char str1[], char str2[]){
+    int len=strlen(str1)+1;
+    
+    for (int i=0; i<len; i++){
+        if (str1[i]!=str2[i]){
+            return str1[i];
+        }
+    }
+    
+    return 0;
+}
+
+int strcpy(char str1[], char str2[]){
+    int i=0;
+    while(str2[i] != '\0'){
+        str1[i]=str2[i];
+    }
+    return 0;
+}
+
+int strcat(char str1[], char str2[]){
+    while(*str1 != '\0'){
+        str1++;
+    }
+    int i=0;
+    str1[i]=str2[i];
+    
+    return 0;
+}
 
 int sanitize(char* str1){
     int len1=strlen(str1)+1;
@@ -28,46 +66,6 @@ int sanitize(char* str1){
     strcpy(str1, str2);
     
     return -1;
-}
-
-char mystrcmp(char str1[], char str2[]){
-    int len=strlen(str1)+1;
-    
-    for (int i=0; i<len; i++){
-        if (str1[i]!=str2[i]){
-            //printf("zadnji char %c\n", str1[i]);
-            return str1[i];
-        }
-    }
-    
-    return 0;
-}
-
-int mystrlen(char str[]){
-    int i=0;
-    while(str!=''){
-        i++;
-    }
-    
-    return i;
-}
-
-int mystrcpy(char str1[], char str2[]){
-    int i=0;
-    while(str2 != '\0'){
-        str1[i]=str2[i];
-    }
-    return 0;
-}
-
-int mystrcat(char str1[], char str2[]){
-    while(str1 != '\0'){
-        str1++;
-    }
-    int i=0;
-    str1[i]=str2[i];
-    
-    return 0;
 }
 
 int register_user(){
@@ -267,7 +265,7 @@ int login(){
     
     fscanf(fptr, "%s %s", username, password);
     
-    if(mystrcmp(password_put_in, password)){
+    if(strcmp(password_put_in, password)){
         puts("password is wrong");
         return -1;
     }
