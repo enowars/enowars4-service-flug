@@ -43,6 +43,32 @@ char mystrcmp(char str1[], char str2[]){
     return 0;
 }
 
+int mystrlen(char str[]){
+    int i=0;
+    while(str!=''){
+        i++;
+    }
+    
+    return i;
+}
+
+int mystrcpy(char str1[], char str2[]){
+    int i=0;
+    while(str2 != '\0'){
+        str1[i]=str2[i];
+    }
+    return 0;
+}
+
+int mystrcat(char str1[], char str2[]){
+    while(str1 != '\0'){
+        str1++;
+    }
+    int i=0;
+    str1[i]=str2[i];
+    
+    return 0;
+}
 
 int register_user(){
 	char new_username[BUFF_LEN + 1];
