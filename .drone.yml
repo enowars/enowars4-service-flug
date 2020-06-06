@@ -21,7 +21,38 @@ steps:
     registry: registry:5000
     insecure: true
 
-< add validation and integration testing steps here >
+- name: publish-service-sources
+  image: alpine/git
+  environment:
+    SSH_KEY:
+      from_secret: github_bot_ssh_key
+  commands:
+    # write the ssh key to disk
+    - mkdir /root/.ssh
+    - echo -n "$SSH_KEY" > /root/.ssh/id_rsa
+    - chmod 600 /root/.ssh/id_rsa
+
+    # add github to known hosts
+    - touch /root/.ssh/known_hosts
+    - chmod 600 /root/.ssh/known_hosts
+    - ssh-keyscan -H github.com > /etc/ssh/ssh_known_hosts 2> /dev/null
+
+    # push service changes
+    - git clone git@github.com:enowars/enowars4-vulnbox-services.git
+    - cd enowars4-vulnbox-services
+    - rm -rf flug/
+    - cp -r ../service/ flug/
+    - git add flug/
+    - git commit -m 'Update flug service' && git push origin HEAD:master || echo -e "\e[32m\nSkipping git push. No changes in service.\e[0m"
+
+    # push checker changes
+    - cd -
+    - git clone git@github.com:enowars/enowars4-vulnbox-checkers.git
+    - cd enowars4-vulnbox-checkers
+    - rm -rf flug/
+    - cp -r ../checker/ flug/
+    - git add flug/
+    - git commit -m 'Update flug checker' && git push origin HEAD:master || echo -e "\e[32m\nSkipping git push. No changes in checker.\e[0m"
 
 - name: trigger-vm-image-creation
   image: plugins/downstream
