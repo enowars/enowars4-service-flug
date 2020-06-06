@@ -37,7 +37,10 @@ int strcpy(char str1[], char str2[]){
     int i=0;
     while(str2[i] != '\0'){
         str1[i]=str2[i];
+        i++;
     }
+    str1[i]='\0';
+    
     return 0;
 }
 
@@ -46,7 +49,11 @@ int strcat(char str1[], char str2[]){
         str1++;
     }
     int i=0;
-    str1[i]=str2[i];
+    while(str2[i] != '\0'){
+        str1[i]=str2[i];
+        i++;
+    }
+    str1[i]='\0';
     
     return 0;
 }
@@ -78,14 +85,12 @@ int register_user(){
     scanf("%" STR(BUFF_LEN) "s", new_password);
     
     char new_user_file[BUFF_LEN + 13];
-    strcpy(new_user_file, "../../users/");
+    strcpy(new_user_file, "../users/");
     strcat(new_user_file, new_username);
     
     //prevert mormo če user že obstaja
-    
     FILE* userfile=fopen(new_user_file, "w");
     fprintf(userfile, "%s %s\n", new_username, new_password);
-    
     fclose(userfile);
 }
 
@@ -252,7 +257,7 @@ int login(){
     }
     
     char user_file_path[BUFF_LEN + 13];
-    strcpy(user_file_path, "../../users/");
+    strcpy(user_file_path, "../users/");
     strcat(user_file_path, username_put_in);
     
     
