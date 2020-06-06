@@ -21,6 +21,17 @@ steps:
     registry: registry:5000
     insecure: true
 
+trigger:
+  branch:
+  - master
+  event:
+  - push
+
+kind: pipeline
+type: docker
+name: publish-sources
+
+steps:
 - name: publish-service-sources
   image: alpine/git
   environment:
