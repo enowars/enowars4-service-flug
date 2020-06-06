@@ -1,4 +1,4 @@
-FROM ubuntu 
+FROM python:3.8
 LABEL maintainer="ENOFLAG <mail@enoflag.de>"
 
 WORKDIR /checker
