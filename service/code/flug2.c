@@ -85,7 +85,7 @@ int register_user(){
     scanf("%" STR(BUFF_LEN) "s", new_password);
     
     char new_user_file[BUFF_LEN + 13];
-    strcpy(new_user_file, "../users/");
+    strcpy(new_user_file, "../../users/");
     strcat(new_user_file, new_username);
     
     //prevert mormo če user že obstaja
@@ -257,7 +257,7 @@ int login(){
     }
     
     char user_file_path[BUFF_LEN + 13];
-    strcpy(user_file_path, "../users/");
+    strcpy(user_file_path, "../../users/");
     strcat(user_file_path, username_put_in);
     
     
