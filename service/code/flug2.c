@@ -5,7 +5,7 @@
 #include <time.h>
 #include <fcntl.h>
 #include <ctype.h>
-
+#include <dirent.h>
 #define BUFF_LEN 200
 #define STR_(X)
 #define STR(X) STR_(X)
@@ -125,6 +125,24 @@ int count_lines(char path[]){
     return count; 
 }
 
+int list_users(){
+    DIR *d;
+    struct dirent *dir;
+    d = opendir("../../users");
+    if (d){
+        while ((dir = readdir(d)) != NULL){
+            if(!strcmp(dir->d_name,".") || !strcmp(dir->d_name,"..")){
+                continue;
+            }
+            printf("%s\n", dir->d_name);
+
+        }
+        closedir(d);
+    }
+    return(0);    
+}
+
+
 int add_ticket(char username[]){
     unsigned long long  random = random_64_bit();
     char path[BUFF_LEN+13];
@@ -200,7 +218,8 @@ int print_menu1(){
 	puts("1: login");
     puts("2: register");
     puts("3: view ticket");
-    puts("4: exit");
+    puts("4: view flight bookings");
+    puts("5: exit");
     puts("================");
     
 }
@@ -327,6 +346,9 @@ int main(){
             view_ticket();
 
         } else if(S[0] == '4'){
+            list_users();
+
+        } else if(S[0] == '5'){
             puts("Bye");
             exit(0);
 
