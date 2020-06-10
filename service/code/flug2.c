@@ -83,12 +83,19 @@ int register_user(){
     scanf("%" STR(BUFF_LEN) "s", new_username);
     puts("Please input your password:");
     scanf("%" STR(BUFF_LEN) "s", new_password);
-    
+
+    int is_file_here;
+
     char new_user_file[BUFF_LEN + 13];
     strcpy(new_user_file, "../../users/");
     strcat(new_user_file, new_username);
-    
-    //prevert mormo če user že obstaja
+
+    is_file_here = access(new_user_file, F_OK);
+
+    if(is_file_here == 0){
+        puts("User already exists");
+        return -1;
+    }
     FILE* userfile=fopen(new_user_file, "w");
     fprintf(userfile, "%s %s\n", new_username, new_password);
     fclose(userfile);
