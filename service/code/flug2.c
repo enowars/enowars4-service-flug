@@ -269,6 +269,7 @@ int view_my_tickets(char username[]){
 int login(){
     char username_put_in[BUFF_LEN + 1];
     char password_put_in[BUFF_LEN + 1];
+    //https://www.youtube.com/watch?v=t-wFKNy0MZQ
     char username[BUFF_LEN + 1];
     char password[BUFF_LEN + 1];
     
