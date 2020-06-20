@@ -104,7 +104,7 @@ int register_user(){
 
 unsigned long long random_64_bit(){
     int fd;
-    unsigned long long  rand;
+    unsigned llong  rand;
     
     fd = open("/dev/urandom", O_RDONLY);
     read(fd, &rand, sizeof(unsigned long long));
@@ -360,7 +360,7 @@ int main(){
             exit(0);
 
         } else {
-            puts("chose again");
+            puts("choose again");
             
         }
         sleep(0.5);
