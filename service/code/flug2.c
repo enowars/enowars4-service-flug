@@ -58,6 +58,7 @@ int strcat(char str1[], char str2[]){
     return 0;
 }
 
+//TODO sanitize is not used in the right way at line 300
 int sanitize(char* str1){
     int len1=strlen(str1)+1;
     char* str2= (char *)malloc(len1);
