@@ -87,7 +87,7 @@ int register_user(){
     int is_file_here;
 
     char new_user_file[BUFF_LEN + 13];
-    strcpy(new_user_file, "../../users/");
+    strcpy(new_user_file, "../users/");
     strcat(new_user_file, new_username);
 
     is_file_here = access(new_user_file, F_OK);
@@ -135,7 +135,7 @@ int count_lines(char path[]){
 int list_users(){
     DIR *d;
     struct dirent *dir;
-    d = opendir("../../users");
+    d = opendir("../users");
     if (d){
         while ((dir = readdir(d)) != NULL){
             if(!strcmp(dir->d_name,".") || !strcmp(dir->d_name,"..")){
@@ -154,14 +154,14 @@ int add_ticket(char username[]){
     unsigned long long  random = random_64_bit();
     char path[BUFF_LEN+13];
 
-    strcpy(path,"../../users/");
+    strcpy(path,"../users/");
     strcat(path,username);
 
     int lines = count_lines(path);
 
     if (lines != -1){
 
-        FILE * userfile = fopen(path,"a+");
+        FILE * userfile = fopen(path,"a"); //TODO popravi
 
         fprintf(userfile,"%d %llu\n",lines,random);
         printf("loaded a new ticket on index %d\n",lines);
@@ -171,22 +171,40 @@ int add_ticket(char username[]){
         char stringify_random[20];
 
         sprintf(stringify_random,"%llu",(unsigned long long)random);
-        strcpy(tickets_path,"../../tickets/");
+        strcpy(tickets_path,"../tickets/");
         strcat(tickets_path,stringify_random);
 
         FILE * tickets_file = fopen(tickets_path,"w");
-        char ticket_text[201]; 
 
+        
+        puts("Please input origin airport");
+        char origin[5];
+        scanf("%4s", origin);
+        sanitize(origin);
+        puts("Please input destination airport");
+        char destination[5];
+        scanf("%4s", destination);
+        sanitize(destination);
+        puts("Please input flight number");
+        //potem spremeni v int
+        llong fl;
+        scanf("%lld", &fl);
+        
         puts("Enter the content of your new ticket");
+        char ticket_text[201]; //ticket onformation
         getc(stdin); //flush stdin so we can use fgets insted of scanf since scanf cant take in spaces.
         fgets(ticket_text,200,stdin);
-        fprintf(tickets_file,"%s\n",ticket_text);
+        fprintf(tickets_file,"%s\n%s\n%lld\n%s\n",origin,destination,fl,ticket_text);
         fclose(tickets_file);
 
     }else{
         return 0;
     }
 }
+
+
+
+
 
 int view_ticket(){
 
@@ -195,7 +213,7 @@ int view_ticket(){
     scanf("%20s",id);
 
     char path[40];
-    strcpy(path,"../../tickets/");
+    strcpy(path,"../tickets/");
     strcat(path,id);
 
     FILE * ticket = fopen(path,"r");
@@ -209,7 +227,7 @@ int view_ticket(){
 
     while (fgets(data, MAXDATA, ticket) != NULL){
         
-        printf("%s", data);
+        printf("%s", data); //TODO make it nice later
     }
 
     fclose(ticket);
@@ -248,7 +266,7 @@ int print_menu2(char usename[]){
 
 int view_my_tickets(char username[]){
     char path[BUFF_LEN + 14];
-    strcpy(path,"../../users/");
+    strcpy(path,"../users/");
     strcat(path,username);
     FILE * tickets = fopen(path,"r");
 
@@ -284,7 +302,7 @@ int login(){
     }
     
     char user_file_path[BUFF_LEN + 13];
-    strcpy(user_file_path, "../../users/");
+    strcpy(user_file_path, "../users/");
     strcat(user_file_path, username_put_in);
     
     
@@ -295,7 +313,8 @@ int login(){
         return -1;
     }
     
-    fscanf(fptr, "%s %s", username, password);
+    int ticket; //TODO hide for CTF
+    fscanf(fptr, "%s %s %*d %d", username, password, &ticket);
     
     if(strcmp(password_put_in, password)){
         puts("password is wrong");
