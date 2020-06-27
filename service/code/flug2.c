@@ -189,15 +189,16 @@ int add_ticket(char username[]){
         puts("Please input flight number");
         //potem spremeni v int
         llong fl;
-        scanf("%lld", &fl);
+        //scanf("%lld", &fl);
 
         
         puts("Enter the content of your new ticket");
         char * ticket_text=(char*)malloc(201); //ticket onformation
         getc(stdin); //flush stdin so we can use fgets insted of scanf since scanf cant take in spaces.
         fgets(ticket_text,200,stdin);
-        fprintf(tickets_file,"%s\n%s\n%lld\n%s\n",origin,destination,fl,ticket_text);
+        fprintf(tickets_file,"%s\n%s\n%llu\n%s\n",origin,destination,fl,ticket_text);
         fclose(tickets_file);
+        printf("\nYour new ticket ID is:\n%llu", random);
 
     }else{
         return 0;
@@ -346,7 +347,7 @@ int login(){
         return -1;
     }
     
-    fscanf(fptr, "%s %s %*d %lld", username, password, &ticket);
+    fscanf(fptr, "%s %s %*d %llu", username, password, &ticket);
     
     if(strcmp(password_put_in, password)){
         puts("password is wrong");
