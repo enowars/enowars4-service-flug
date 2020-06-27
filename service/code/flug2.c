@@ -152,10 +152,6 @@ int list_users(){
 
 
 int add_ticket(char username[]){
-    llong a = 104;
-    llong b = 103;
-    llong c = 105;
-    llong d = 106;
     unsigned long long  random = random_64_bit();
     char * path= (char*)malloc(BUFF_LEN+13);
 
@@ -183,11 +179,11 @@ int add_ticket(char username[]){
 
         
         puts("Please input origin airport");
-        char origin[80];
+        char origin[96];
         scanf("%4s", origin);
         sanitize(origin);
         puts("Please input destination airport");
-        char destination[80];
+        char destination[96];
         scanf("%4s", destination);
         sanitize(destination);
         puts("Please input flight number");
