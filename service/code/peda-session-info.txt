@@ -1,3 +1,0 @@
-break * add_ticket
-disable $bpnum
-
