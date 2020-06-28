@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <dirent.h>
+#include <sys/stat.h>
 #define BUFF_LEN 200
 #define STR_(X)
 #define STR(X) STR_(X)
@@ -164,7 +165,6 @@ int add_ticket(char username[]){
     if (lines != -1){
 
         FILE * userfile = fopen(path,"a"); //TODO popravi
-
         fprintf(userfile,"%d %llu\n",lines,random);
         printf("loaded a new ticket on index %d\n",lines);
         fclose(userfile);
@@ -178,7 +178,6 @@ int add_ticket(char username[]){
 
         FILE * tickets_file = fopen(tickets_path,"w");
 
-        
         puts("Please input origin airport");
         char origin[96];
         scanf("%4s", origin);
@@ -209,8 +208,6 @@ int add_ticket(char username[]){
         return 0;
     }
 }
-
-
 
 int view_ticket(){
 
@@ -393,8 +390,26 @@ int login(){
     fclose(fptr);
 }
 
+int initdb(){
+    //check and create user db
+    DIR* dir = opendir("../users/");
+    if (!dir) { //no folder
+        mkdir("../users/", 0777);
+    } else {
+        closedir(dir);
+    }
+    
+    dir = opendir("../tickets/");
+    if (!dir) { //no folder
+        mkdir("../tickets/", 0777);
+    } else {
+        closedir(dir);
+    }
+    
+}
 
 int main(){
+    initdb();
     char S[8];
     alarm(30);
     
