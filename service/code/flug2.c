@@ -288,9 +288,12 @@ int view_my_tickets(char username[]){
 int logged_in(char username[]){
 //TODO meybi v svojo funkcijo
     char Input[8];
+    
     while (1){
         print_menu2(username);
-        scanf("%3s",Input);
+        if(!scanf("%3s",Input)){
+            exit(-1);
+        }
 
         if(Input[0] == '1'){
             add_ticket(username);
@@ -318,9 +321,9 @@ int login(){
     llong ticket; //TODO hide for CTF
 
     char * username_put_in = (char *)malloc(BUFF_LEN + 1);
-
     char * password_put_in =  (char *)malloc(BUFF_LEN + 1);
     //https://www.youtube.com/watch?v=t-wFKNy0MZQ
+    
     char * username= (char *)malloc(BUFF_LEN + 1);
     char password[BUFF_LEN+1];
 //    char * password= (char *)malloc(BUFF_LEN + 1);
@@ -372,11 +375,13 @@ int login(){
 
 int main(){
     char S[8];
-    
+    //alarm(30);
     
     while(1){
         print_menu1();
-        scanf("%3s", S);
+        if (!scanf("%3s", S)){
+            exit(-1);
+        }
 
         if(S[0] == '1'){ //login
             login();
