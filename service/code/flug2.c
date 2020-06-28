@@ -24,7 +24,7 @@ int print_menu1(){
     puts("3: view ticket");
     puts("4: view flight bookings");
     puts("5: anonymous");
-    puts("6: about")
+    puts("6: about");
     puts("7: exit");
     puts("================");
     
@@ -46,8 +46,7 @@ int print_menu2(char usename[]){
 int about(){
     puts("Welcome to service flug made by Urban(Lightning5) and Aleks(NOx)");
     puts("There are two vulnerabilities in the service");
-    puts("If there are any questions find us on IRC");
-    puts();
+    puts("If there are any questions find us on IRC\n");
     puts("Have fun :)");
     
 }
