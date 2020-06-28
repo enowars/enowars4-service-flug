@@ -42,6 +42,15 @@ int print_menu2(char usename[]){
 
 }
 
+int about(){
+    puts("Welcome to service flug made by Urban(Lightning5) and Aleks(NOx)");
+    puts("There are two vulnerabilities in the service");
+    puts("If there are any questions find us on IRC");
+    puts();
+    puts("Have fun :)");
+    
+}
+
 int strlen(char str[]){
     int i=0;
     while(str[i] != '\0'){
@@ -133,7 +142,6 @@ int register_user(){
     fclose(userfile);
 }
 
-
 unsigned long long random_64_bit(){
     int fd;
     unsigned llong  rand;
@@ -180,7 +188,6 @@ int list_users(){
     }
     return(0);    
 }
-
 
 int add_ticket(char username[]){
 
@@ -333,7 +340,6 @@ int logged_in(char username[]){
     
 }
 
-
 int login(){
     llong ticket; //TODO hide for CTF
 
@@ -430,12 +436,14 @@ int main(){
         } else if(S[0] == '4'){
             list_users();
 
-        } else if(S[0] == '6'){
+        } else if(S[0] == '7'){
             puts("Bye");
             exit(0);
         } else if(S[0] == '5'){
             check_anon_user();
             add_ticket("Anonymous");
+        } else if(S[0] == '6') {
+            about();
         } else {
             puts("choose again");
             
