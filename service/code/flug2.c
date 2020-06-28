@@ -134,7 +134,6 @@ int register_user(){
 
     if(is_file_here == 0){
         puts("User already exists");
-        fclose(userfile);
         return -1;
     }
     FILE* userfile=fopen(new_user_file, "w");
@@ -398,14 +397,16 @@ int login(){
 int initdb(){
     //check and create user db
     DIR* dir = opendir("../users/");
-    if (!dir) { //no folder
+    if (!dir) {
+ //no folder
         mkdir("../users/", 0777);
     } else {
         closedir(dir);
     }
     
     dir = opendir("../tickets/");
-    if (!dir) { //no folder
+    if (!dir) {
+ //no folder
         mkdir("../tickets/", 0777);
     } else {
         closedir(dir);
