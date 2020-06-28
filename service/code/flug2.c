@@ -24,7 +24,8 @@ int print_menu1(){
     puts("3: view ticket");
     puts("4: view flight bookings");
     puts("5: anonymous");
-    puts("6: exit");
+    puts("6: about")
+    puts("7: exit");
     puts("================");
     
 }
