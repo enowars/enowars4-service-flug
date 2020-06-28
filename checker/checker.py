@@ -38,8 +38,8 @@ class FlugChecker(BaseChecker):
         try:    
             p.recvuntil(b"================")
             p.sendlineafter(b"================",b"2")
-            p.sendlineafter(b"Please input your new username:",bytes(username,'ascii'))
-            p.sendlineafter(b"Please input your password:\n",bytes(password,'ascii'))
+            p.sendlineafter(b"Please input your new username:",bytes(username,'utf-8'))
+            p.sendlineafter(b"Please input your password:\n",bytes(password,'utf-8'))
         except:
             raise BrokenServiceException("Registration failed [putflag]")
 
@@ -47,8 +47,8 @@ class FlugChecker(BaseChecker):
         try:
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"1")
-            p.sendlineafter(b"Please input your username:\n",bytes(username,'ascii'))
-            p.sendlineafter(b"Please input your password:\n",bytes(password,'ascii'))
+            p.sendlineafter(b"Please input your username:\n",bytes(username,'utf-8'))
+            p.sendlineafter(b"Please input your password:\n",bytes(password,'utf-8'))
         except:
             raise BrokenServiceException("Login failed [putflag]")
 
@@ -59,7 +59,7 @@ class FlugChecker(BaseChecker):
             time.sleep(.1)
             p.recvuntil(b"Enter the content of your new ticket\n")
             print("Putting in flag: {}".format(self.flag))
-            p.sendline(bytes(self.flag,'ascii'))
+            p.sendline(bytes(self.flag,'utf-8'))
             time.sleep(.1)
 
         except:
@@ -70,7 +70,7 @@ class FlugChecker(BaseChecker):
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"2")
             stdo = p.recvline()
-            ticket_id = p.recvline().decode('ascii').split(" ")[1]
+            ticket_id = p.recvline().decode('utf-8').split(" ")[1]
             print("The new flag is at index: {}".format(ticket_id))
             self.team_db[self.flag] = (username,password,ticket_id)
         except:
@@ -90,10 +90,10 @@ class FlugChecker(BaseChecker):
             print('Retrieveng Flag ...')
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n","3")
-            p.sendlineafter(b"Enter the unique id of your ticket",bytes(self.team_db[self.flag][2],'ascii'))
+            p.sendlineafter(b"Enter the unique id of your ticket",bytes(self.team_db[self.flag][2],'utf-8'))
             p.recvline()
             p.recvline()
-            flag2 = p.recvline().decode('ascii')
+            flag2 = p.recvline().decode('utf-8')
         except:
             raise BrokenServiceException("Unable to get flag from the service [getflag]")
         print('flag retireved: {}'.format(flag2))
@@ -120,8 +120,8 @@ class FlugChecker(BaseChecker):
         try:
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"2")
-            p.sendlineafter(b"Please input your new username:\n",bytes(username,'ascii'))
-            p.sendlineafter(b"Please input your password:\n",bytes(password,'ascii'))
+            p.sendlineafter(b"Please input your new username:\n",bytes(username,'utf-8'))
+            p.sendlineafter(b"Please input your password:\n",bytes(password,'utf-8'))
         except: 
             raise BrokenServiceException("Registration failed [putnoise]")
 
@@ -129,8 +129,8 @@ class FlugChecker(BaseChecker):
         try:
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"1")
-            p.sendlineafter(b"Please input your username:\n",bytes(username,'ascii'))
-            p.sendlineafter(b"Please input your password:\n",bytes(password,'ascii'))
+            p.sendlineafter(b"Please input your username:\n",bytes(username,'utf-8'))
+            p.sendlineafter(b"Please input your password:\n",bytes(password,'utf-8'))
         except:
             raise BrokenServiceException("Login failed [putnoise]")
 
@@ -140,7 +140,7 @@ class FlugChecker(BaseChecker):
             p.sendlineafter(b"================\n",b"1")
             time.sleep(.1)
             p.recvuntil(b"Enter the content of your new ticket\n")
-            p.sendline(bytes(self.noise,'ascii'))
+            p.sendline(bytes(self.noise,'utf-8'))
             print('puting in noise: {}'.format(self.noise))    
         except:
             raise BrokenServiceException("Putting in noise failed [putnoise]")
@@ -151,7 +151,7 @@ class FlugChecker(BaseChecker):
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"2")
             stdo = p.recvline()
-            noise_id = p.recvline().decode('ascii').split(' ')[1]
+            noise_id = p.recvline().decode('utf-8').split(' ')[1]
             print('Noise is set at id: {}'.format(noise_id))
             self.team_db[self.noise] = (username,password,noise_id)
         except:
@@ -173,10 +173,10 @@ class FlugChecker(BaseChecker):
             print("Getting noise ...")
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"3")
-            p.sendlineafter(b"Enter the unique id of your ticket",bytes(self.team_db[self.noise][2],'ascii'))
+            p.sendlineafter(b"Enter the unique id of your ticket",bytes(self.team_db[self.noise][2],'utf-8'))
             p.recvline()
             p.recvline()
-            noise2 = p.recvline().decode('ascii') 
+            noise2 = p.recvline().decode('utf-8') 
             print('Got noise: {}'.format(noise2))
             print('Expected noise: {}'.format(self.noise))                 
             if noise2.strip() != self.noise.strip():
@@ -221,7 +221,7 @@ class FlugChecker(BaseChecker):
         must_be_in_menu_when_logged_in = ['buy ticket','view my tickets','view ticket','logout']
 
         #Check first menu
-        menu1 = p.recv(200).decode('ascii').lower()
+        menu1 = p.recv(200).decode('utf-8').lower()
         for elem in must_be_in_menu1:
             if elem not in menu1:
                 print('failed first test: \'{}\' not in menu'.format(elem))
@@ -229,7 +229,7 @@ class FlugChecker(BaseChecker):
 
         sleep(.2)
         p.sendline(b'3')
-        menu_after_view_ticket_global = p.recv(200).decode('ascii').lower()
+        menu_after_view_ticket_global = p.recv(200).decode('utf-8').lower()
 
         #Check the view ticket message
         for elem in must_be_in_view_ticket_menu:
@@ -241,10 +241,10 @@ class FlugChecker(BaseChecker):
         p.sendline(test_ticket)
 
         p.sendlineafter(b"================\n",b'1')
-        p.sendlineafter(b'Please input your username:\n',bytes(test_user,'ascii'))
-        p.sendlineafter(b'Please input your password:\n',bytes(test_pass,'ascii'))
-        logged_in_menu =p.recv(130).decode('ascii').lower()
-        logged_in_menu +=p.recv(130).decode('ascii').lower()
+        p.sendlineafter(b'Please input your username:\n',bytes(test_user,'utf-8'))
+        p.sendlineafter(b'Please input your password:\n',bytes(test_pass,'utf-8'))
+        logged_in_menu =p.recv(130).decode('utf-8').lower()
+        logged_in_menu +=p.recv(130).decode('utf-8').lower()
         print('+++++++++++\nmenu: {}\n+++++++++++++'.format(logged_in_menu))
         sleep(.3)
 
@@ -270,21 +270,21 @@ class FlugChecker(BaseChecker):
 
         p.recvuntil(b"================\n")
         p.sendlineafter(b"================\n",b'1')
-        p.sendlineafter(b"Please input your username:\n",bytes(username,'ascii'))
+        p.sendlineafter(b"Please input your username:\n",bytes(username,'utf-8'))
         p.sendlineafter(b"Please input your password:\n",'\x00')
         #p.recvline() #TODO: odstrani ko urban popravi svoje randomly placed printfe
         p.recv(2)
-        check_line = p.recvline().decode('ascii').strip()
+        check_line = p.recvline().decode('utf-8').strip()
         p.recvuntil(b"================\n")
         p.sendlineafter(b"================\n",b"2")
         stdo = p.recvline()
-        flag_id = p.recvline().decode('ascii').split(' ')[1]
+        flag_id = p.recvline().decode('utf-8').split(' ')[1]
         p.recvuntil(b"================\n")
         p.sendlineafter(b"================\n",b"3")
-        p.sendlineafter(b"Enter the unique id of your ticket",bytes(flag_id,'ascii'))
+        p.sendlineafter(b"Enter the unique id of your ticket",bytes(flag_id,'utf-8'))
         p.recvline()
         p.recvline()
-        flag = p.recvline().decode('ascii').split()
+        flag = p.recvline().decode('utf-8').split()
 
 
         if username in check_line:
