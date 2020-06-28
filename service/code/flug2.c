@@ -245,7 +245,7 @@ int print_menu1(){
     puts("2: register");
     puts("3: view ticket");
     puts("4: view flight bookings");
-    puts("5: visit osama");
+    puts("5: anonymous");
     puts("6: exit");
     puts("================");
     
@@ -375,7 +375,7 @@ int login(){
 
 int main(){
     char S[8];
-    //alarm(30);
+    alarm(30);
     
     while(1){
         print_menu1();
@@ -399,7 +399,7 @@ int main(){
             puts("Bye");
             exit(0);
         } else if(S[0] == '5'){
-            add_ticket("Osama");
+            add_ticket("Anonymous");
         } else {
             puts("choose again");
             
