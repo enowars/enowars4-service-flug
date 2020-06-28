@@ -13,6 +13,35 @@
 #define MAXDATA 1000
 #define llong long long
 
+int print_menu1(){
+    puts("Welcome to the airport");
+    puts("======================");
+    puts("How can we help you today?");
+    puts("The menu");
+    puts("================");
+	puts("1: login");
+    puts("2: register");
+    puts("3: view ticket");
+    puts("4: view flight bookings");
+    puts("5: anonymous");
+    puts("6: exit");
+    puts("================");
+    
+}
+
+int print_menu2(char usename[]){
+    puts("\n");
+    printf("welcome %s\n",usename);
+    puts("The menu");
+    puts("================");
+    puts("1: buy ticket");
+    puts("2: view my tickets");
+    puts("3: view ticket");
+    puts("4: logout");
+    puts("================");
+
+}
+
 int strlen(char str[]){
     int i=0;
     while(str[i] != '\0'){
@@ -96,6 +125,7 @@ int register_user(){
 
     if(is_file_here == 0){
         puts("User already exists");
+        fclose(userfile);
         return -1;
     }
     FILE* userfile=fopen(new_user_file, "w");
@@ -252,37 +282,6 @@ int check_anon_user(){
     }
     
 }
-
-int print_menu1(){
-    puts("Welcome to the airport");
-    puts("======================");
-    puts("How can we help you today?");
-    puts("The menu");
-    puts("================");
-	puts("1: login");
-    puts("2: register");
-    puts("3: view ticket");
-    puts("4: view flight bookings");
-    puts("5: anonymous");
-    puts("6: exit");
-    puts("================");
-    
-}
-
-
-int print_menu2(char usename[]){
-    puts("\n");
-    printf("welcome %s\n",usename);
-    puts("The menu");
-    puts("================");
-    puts("1: buy ticket");
-    puts("2: view my tickets");
-    puts("3: view ticket");
-    puts("4: logout");
-    puts("================");
-
-}
-
 
 int view_my_tickets(char username[]){
     char path[BUFF_LEN + 14];
