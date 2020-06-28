@@ -200,6 +200,11 @@ int add_ticket(char username[]){
         fprintf(tickets_file,"%s\n%s\n%llu\n%s\n",origin,destination,fl,ticket_text);
         fclose(tickets_file);
         printf("\nYour new ticket ID is:\n%llu", random);
+        
+        free(path);
+        free(tickets_path);
+        free(stringify_random);
+        free(ticket_text);
     }else{
         return 0;
     }
@@ -234,6 +239,22 @@ int view_ticket(){
     fclose(ticket);
 }
 
+int check_anon_user(){
+    if( access( "../users/Anonymous", F_OK ) != -1 ) {
+        // user exists
+        return 0;
+    } else {
+        // file doesn't exist
+        char stringify_random[20];
+        sprintf(stringify_random,"%llu",(unsigned long long)random);
+
+        FILE* userfile=fopen("../users/Anonymous", "w");
+        fprintf(userfile, "%s %s\n", "Anonymous", stringify_random);
+        fclose(userfile);
+        return -1;
+    }
+    
+}
 
 int print_menu1(){
     puts("Welcome to the airport");
@@ -399,6 +420,7 @@ int main(){
             puts("Bye");
             exit(0);
         } else if(S[0] == '5'){
+            check_anon_user();
             add_ticket("Anonymous");
         } else {
             puts("choose again");
