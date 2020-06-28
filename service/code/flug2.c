@@ -49,6 +49,7 @@ int about(){
     puts("If there are any questions find us on IRC\n");
     puts("Have fun :)");
     
+    sleep(5);
 }
 
 int strlen(char str[]){
