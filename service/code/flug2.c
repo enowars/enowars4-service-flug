@@ -223,7 +223,6 @@ int add_ticket(char username[]){
         char destination[96];
         scanf("%80s", destination);
         sanitize(destination);
-        puts("Please input flight number");
         //potem spremeni v int
         llong fl;
         if(!origin){
