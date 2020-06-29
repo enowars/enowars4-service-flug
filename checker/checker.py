@@ -26,9 +26,7 @@ class FlugChecker(BaseChecker):
         password = self.gen_password()
 
         try:
-            print('Connecting ...')
             p = remote(self.address,port)
-            print("Connection succeded")
         except:
             raise OfflineException("Unable to connect to the service [putflag]")
 
@@ -66,7 +64,6 @@ class FlugChecker(BaseChecker):
             p.recvuntil("Your new ticket ID is:\n")
             ticket_id = p.recvline().decode('utf-8')
             self.team_db[self.flag] = (username,password,ticket_id)
-            print("The new flag is at index: {}".format(ticket_id))
         except:
             raise BrokenServiceException("Put flag failed [putflag]")
 
