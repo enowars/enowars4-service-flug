@@ -217,11 +217,11 @@ int add_ticket(char username[]){
 
         puts("Please input origin airport");
         char origin[96];
-        scanf("%4s", origin);
+        scanf("%80s", origin);
         sanitize(origin);
         puts("Please input destination airport");
         char destination[96];
-        scanf("%4s", destination);
+        scanf("%80s", destination);
         sanitize(destination);
         puts("Please input flight number");
         //potem spremeni v int
@@ -236,7 +236,7 @@ int add_ticket(char username[]){
         fprintf(tickets_file,"%s\n%s\n%llu\n%s\n",origin,destination,fl,ticket_text);
         fclose(tickets_file);
         printf("\nYour new ticket ID is:\n%llu", random);
-        
+        fflush(stdin);
         free(path);
         free(tickets_path);
         free(stringify_random);
@@ -333,6 +333,7 @@ int logged_in(char username[]){
 
         }else{
             puts("Invalid option try again");
+            printf("%s",Input);
 
         }
 
@@ -418,7 +419,7 @@ int initdb(){
 int main(){
     initdb();
     char S[8];
-    alarm(30);
+    //alarm(30);
     
     while(1){
         print_menu1();

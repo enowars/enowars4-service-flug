@@ -36,8 +36,8 @@ class FlugChecker(BaseChecker):
 
 
         try:    
-            p.recvuntil(b"================")
-            p.sendlineafter(b"================",b"2")
+            p.recvuntil(b"================\n")
+            p.sendlineafter(b"================\n",b"2")
             p.sendlineafter(b"Please input your new username:",bytes(username,'utf-8'))
             p.sendlineafter(b"Please input your password:\n",bytes(password,'utf-8'))
         except:
@@ -57,24 +57,20 @@ class FlugChecker(BaseChecker):
             p.recvuntil(b"================\n")   
             p.sendlineafter(b"================\n",b"1")
             time.sleep(.1)
+            p.recvuntil(b"Please input origin airport\n")
+            p.sendline(bytes(self.noise,'utf-8'))
+            p.recvuntil(b"Please input destination airport\n")
+            p.sendline(bytes(self.noise,'utf-8'))
             p.recvuntil(b"Enter the content of your new ticket\n")
             print("Putting in flag: {}".format(self.flag))
             p.sendline(bytes(self.flag,'utf-8'))
             time.sleep(.1)
-
+            p.recvuntil("Your new ticket ID is:\n")
+            ticket_id = p.recvline().decode('utf-8')
+            self.team_db[self.flag] = (username,password,ticket_id)
+            print("The new flag is at index: {}".format(ticket_id))
         except:
             raise BrokenServiceException("Put flag failed [putflag]")
-
-
-        try:
-            p.recvuntil(b"================\n")
-            p.sendlineafter(b"================\n",b"2")
-            stdo = p.recvline()
-            ticket_id = p.recvline().decode('utf-8').split(" ")[1]
-            print("The new flag is at index: {}".format(ticket_id))
-            self.team_db[self.flag] = (username,password,ticket_id)
-        except:
-            raise BrokenServiceException("There were problems with database or view tickets doesnt work [putflag]")
 
 
     def getflag(self):  # type: () -> None
@@ -88,9 +84,13 @@ class FlugChecker(BaseChecker):
 
         try:
             print('Retrieveng Flag ...')
+            print("using ticket_it: "+self.team_db[self.flag][2])
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n","3")
             p.sendlineafter(b"Enter the unique id of your ticket",bytes(self.team_db[self.flag][2],'utf-8'))
+            p.recvline()
+            p.recvline()
+            p.recvline()
             p.recvline()
             p.recvline()
             flag2 = p.recvline().decode('utf-8')
@@ -107,22 +107,22 @@ class FlugChecker(BaseChecker):
         username = self.gen_user()
         password = self.gen_password()
 
-
         try:
             print('Connecting ...')
             p = remote(self.address,port)
             print("Connection succeded")
         except:
-            raise enochecker("Connection failed at put noise")
+            raise OfflineException("Unable to connect to the service [putnoise]")
+
+        print("Reistering a user with username: {} and password {} [putnoise]".format(username,password))
 
 
-        print('Puting in noise with username: {} and password: {}'.format(username,password))
-        try:
+        try:    
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n",b"2")
-            p.sendlineafter(b"Please input your new username:\n",bytes(username,'utf-8'))
+            p.sendlineafter(b"Please input your new username:",bytes(username,'utf-8'))
             p.sendlineafter(b"Please input your password:\n",bytes(password,'utf-8'))
-        except: 
+        except:
             raise BrokenServiceException("Registration failed [putnoise]")
 
 
@@ -139,23 +139,20 @@ class FlugChecker(BaseChecker):
             p.recvuntil(b"================\n")   
             p.sendlineafter(b"================\n",b"1")
             time.sleep(.1)
-            p.recvuntil(b"Enter the content of your new ticket\n")
+            p.recvuntil(b"Please input origin airport\n")
             p.sendline(bytes(self.noise,'utf-8'))
-            print('puting in noise: {}'.format(self.noise))    
-        except:
-            raise BrokenServiceException("Putting in noise failed [putnoise]")
-
-
-        try:
+            p.recvuntil(b"Please input destination airport\n")
+            p.sendline(bytes(self.noise,'utf-8'))
+            p.recvuntil(b"Enter the content of your new ticket\n")
+            print("Putting in noise: {}".format(self.flag))
+            p.sendline(bytes(self.noise,'utf-8'))
             time.sleep(.1)
-            p.recvuntil(b"================\n")
-            p.sendlineafter(b"================\n",b"2")
-            stdo = p.recvline()
-            noise_id = p.recvline().decode('utf-8').split(' ')[1]
-            print('Noise is set at id: {}'.format(noise_id))
+            p.recvuntil("Your new ticket ID is:\n")
+            noise_id = p.recvline().decode('utf-8')
             self.team_db[self.noise] = (username,password,noise_id)
+            print("The new noise index is at: {}".format(noise_id))
         except:
-            raise BrokenServiceException("There were problems with database or view tickets [putnoise]")
+            raise BrokenServiceException("Put noise failed [putnoise]")
 
 
         self.team_db["noise"] = self.noise
@@ -166,23 +163,26 @@ class FlugChecker(BaseChecker):
             p = remote(self.address,port)
             print("Connection succeded")
         except:
-             raise OfflineException("Connection failed [getnoise]")
+            raise OfflineException("Connection failed [getflag]")
 
 
         try:
-            print("Getting noise ...")
+            print('Retrieveng Noise ...')
             p.recvuntil(b"================\n")
-            p.sendlineafter(b"================\n",b"3")
+            p.sendlineafter(b"================\n","3")
             p.sendlineafter(b"Enter the unique id of your ticket",bytes(self.team_db[self.noise][2],'utf-8'))
             p.recvline()
             p.recvline()
-            noise2 = p.recvline().decode('utf-8') 
-            print('Got noise: {}'.format(noise2))
-            print('Expected noise: {}'.format(self.noise))                 
-            if noise2.strip() != self.noise.strip():
-                raise BrokenServiceException("Noises dont match [getnoise]")
+            p.recvline()
+            p.recvline()
+            p.recvline()
+            noise = p.recvline().decode('utf-8')
         except:
-            BrokenServiceException('fail at [getnoise]')
+            raise BrokenServiceException("Unable to get noise from the service [getnoise]")
+        print('noiseretireved: {}'.format(noise))
+        print('noise should be: {}'.format(self.noise))
+        if noise.strip() != self.noise.strip():
+            raise BrokenServiceException("The noises dont mach! [getnoise]")
         """
         This method retrieves noise in the service.
         The noise to be retrieved is inside self.flag
@@ -195,11 +195,9 @@ class FlugChecker(BaseChecker):
                 the preferred way to report errors in the service is by raising an appropriate enoexception
         """
     def havoc(self):  # type: () -> None
-        try:
-            self.putnoise()
-            self.getnoise()
-        except:
-            raise BrokenServiceException("Get noise or putnoise failed [havoc]")
+        self.putnoise()
+        self.getnoise()
+
         try:
             p = remote(self.address,port)
         except:
@@ -216,12 +214,12 @@ class FlugChecker(BaseChecker):
         test_pass = self.team_db[self.noise][1]
 
         #we check for words in these arrs when checking the menu
-        must_be_in_menu1 = ['menu','login','register','view ticket','exit']
+        must_be_in_menu1 = ['menu','login','register','view ticket','exit','about','anonymous','bookings']
         must_be_in_view_ticket_menu = ['ticket','id']
         must_be_in_menu_when_logged_in = ['buy ticket','view my tickets','view ticket','logout']
 
         #Check first menu
-        menu1 = p.recv(200).decode('utf-8').lower()
+        menu1 = p.recv(210).decode('utf-8').lower()
         for elem in must_be_in_menu1:
             if elem not in menu1:
                 print('failed first test: \'{}\' not in menu'.format(elem))
@@ -230,6 +228,7 @@ class FlugChecker(BaseChecker):
         sleep(.2)
         p.sendline(b'3')
         menu_after_view_ticket_global = p.recv(200).decode('utf-8').lower()
+        print("trouble menu: "+menu_after_view_ticket_global)
 
         #Check the view ticket message
         for elem in must_be_in_view_ticket_menu:
