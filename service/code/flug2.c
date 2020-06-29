@@ -35,7 +35,7 @@ int print_menu2(char usename[]){
     printf("welcome %s\n",usename);
     puts("The menu");
     puts("================");
-    puts("1: buy ticket");
+    puts("1: buy ticketTEST");
     puts("2: view my tickets");
     puts("3: view ticket");
     puts("4: logout");
