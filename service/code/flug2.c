@@ -419,7 +419,7 @@ int initdb(){
 int main(){
     initdb();
     char S[8];
-    //alarm(30);
+    alarm(20);
     
     while(1){
         print_menu1();

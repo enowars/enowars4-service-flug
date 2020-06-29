@@ -32,7 +32,6 @@ class FlugChecker(BaseChecker):
         except:
             raise OfflineException("Unable to connect to the service [putflag]")
 
-        print("Reistering a user with username: {} and password {} [putflag]".format(username,password))
 
 
         try:    
@@ -62,7 +61,6 @@ class FlugChecker(BaseChecker):
             p.recvuntil(b"Please input destination airport\n")
             p.sendline(bytes(self.noise,'utf-8'))
             p.recvuntil(b"Enter the content of your new ticket\n")
-            print("Putting in flag: {}".format(self.flag))
             p.sendline(bytes(self.flag,'utf-8'))
             time.sleep(.1)
             p.recvuntil("Your new ticket ID is:\n")
@@ -75,16 +73,12 @@ class FlugChecker(BaseChecker):
 
     def getflag(self):  # type: () -> None
         try:
-            print('Connecting ...')
             p = remote(self.address,port)
-            print("Connection succeded")
         except:
             raise OfflineException("Connection failed [getflag]")
 
 
         try:
-            print('Retrieveng Flag ...')
-            print("using ticket_it: "+self.team_db[self.flag][2])
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n","3")
             p.sendlineafter(b"Enter the unique id of your ticket",bytes(self.team_db[self.flag][2],'utf-8'))
@@ -96,8 +90,6 @@ class FlugChecker(BaseChecker):
             flag2 = p.recvline().decode('utf-8')
         except:
             raise BrokenServiceException("Unable to get flag from the service [getflag]")
-        print('flag retireved: {}'.format(flag2))
-        print('flag should be: {}'.format(self.flag))
         if flag2.strip() != self.flag.strip():
             raise BrokenServiceException("The flags dont mach! [getflag]")
 
@@ -108,13 +100,10 @@ class FlugChecker(BaseChecker):
         password = self.gen_password()
 
         try:
-            print('Connecting ...')
             p = remote(self.address,port)
-            print("Connection succeded")
         except:
             raise OfflineException("Unable to connect to the service [putnoise]")
 
-        print("Reistering a user with username: {} and password {} [putnoise]".format(username,password))
 
 
         try:    
@@ -144,13 +133,11 @@ class FlugChecker(BaseChecker):
             p.recvuntil(b"Please input destination airport\n")
             p.sendline(bytes(self.noise,'utf-8'))
             p.recvuntil(b"Enter the content of your new ticket\n")
-            print("Putting in noise: {}".format(self.flag))
             p.sendline(bytes(self.noise,'utf-8'))
             time.sleep(.1)
             p.recvuntil("Your new ticket ID is:\n")
             noise_id = p.recvline().decode('utf-8')
             self.team_db[self.noise] = (username,password,noise_id)
-            print("The new noise index is at: {}".format(noise_id))
         except:
             raise BrokenServiceException("Put noise failed [putnoise]")
 
@@ -159,15 +146,12 @@ class FlugChecker(BaseChecker):
     def getnoise(self):  # type: () -> None
 
         try:
-            print('Connecting ...')
             p = remote(self.address,port)
-            print("Connection succeded")
         except:
             raise OfflineException("Connection failed [getflag]")
 
 
         try:
-            print('Retrieveng Noise ...')
             p.recvuntil(b"================\n")
             p.sendlineafter(b"================\n","3")
             p.sendlineafter(b"Enter the unique id of your ticket",bytes(self.team_db[self.noise][2],'utf-8'))
@@ -179,8 +163,6 @@ class FlugChecker(BaseChecker):
             noise = p.recvline().decode('utf-8')
         except:
             raise BrokenServiceException("Unable to get noise from the service [getnoise]")
-        print('noiseretireved: {}'.format(noise))
-        print('noise should be: {}'.format(self.noise))
         if noise.strip() != self.noise.strip():
             raise BrokenServiceException("The noises dont mach! [getnoise]")
         """
@@ -225,17 +207,14 @@ class FlugChecker(BaseChecker):
                 print('failed first test: \'{}\' not in menu'.format(elem))
                 raise BrokenServiceException('Menu1 isnt ok [havoc]')
 
-        sleep(.2)
         p.sendline(b'3')
         menu_after_view_ticket_global = p.recv(200).decode('utf-8').lower()
-        print("trouble menu: "+menu_after_view_ticket_global)
 
         #Check the view ticket message
         for elem in must_be_in_view_ticket_menu:
             if elem not in menu_after_view_ticket_global:
                 print('failed second test: \'{}\' not in menu'.format(elem))
                 raise BrokenServiceException('View Ticket menu is not ok [havoc]')
-        sleep(.2)
 
         p.sendline(test_ticket)
 
@@ -244,8 +223,6 @@ class FlugChecker(BaseChecker):
         p.sendlineafter(b'Please input your password:\n',bytes(test_pass,'utf-8'))
         logged_in_menu =p.recv(130).decode('utf-8').lower()
         logged_in_menu +=p.recv(130).decode('utf-8').lower()
-        print('+++++++++++\nmenu: {}\n+++++++++++++'.format(logged_in_menu))
-        sleep(.3)
 
         #Check the menu when logged in
         for elem in must_be_in_menu_when_logged_in:
