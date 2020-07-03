@@ -380,10 +380,9 @@ int login(){
         puts("password is wrong");
         return -1;
     }
-    //TODO: nov meni za add ticket
-    //TODO: while loop za logiko ko si loged in idk.
     puts("password is ok");
     
+    //here we log in
     logged_in(username);
     //freeda je bila moja kraljica
     //https://www.youtube.com/watch?v=52d_JutxYLA
