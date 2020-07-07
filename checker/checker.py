@@ -19,6 +19,7 @@ class FlugChecker(BaseChecker):
     havoc_count = 1
     global port 
     port = 7478
+    service_name = "flug"
 
 
     def putflag(self):  # type: () -> None
