@@ -13,6 +13,7 @@ class FlugChecker(BaseChecker):
     noise_count = 1
     havoc_count = 1
     port = 7478
+    service_name = "flug"
 
 
     def putflag(self):  # type: () -> None
