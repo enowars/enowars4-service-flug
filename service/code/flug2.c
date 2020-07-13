@@ -70,7 +70,7 @@ char strcmp(char str1[], char str2[]){
         }
     }
     
-    return 0;
+    return 0;   
 }
 
 int strcpy(char str1[], char str2[]){
@@ -278,6 +278,7 @@ int check_anon_user(){
         return 0;
     } else {
         // file doesn't exist
+        unsigned llong random = random_64_bit();
         char stringify_random[20];
         sprintf(stringify_random,"%llu",(unsigned long long)random);
 
