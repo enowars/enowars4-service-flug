@@ -22,37 +22,15 @@ steps:
     insecure: true
 
 - name: publish-service-sources
-  image: alpine/git
+  image: alpine
   environment:
     SSH_KEY:
       from_secret: github_bot_ssh_key
+    ACCESS_TOKEN:
+      from_secret: github_bot_access_token
   commands:
-    # write the ssh key to disk
-    - mkdir /root/.ssh
-    - echo -n "$SSH_KEY" > /root/.ssh/id_rsa
-    - chmod 600 /root/.ssh/id_rsa
-
-    # add github to known hosts
-    - touch /root/.ssh/known_hosts
-    - chmod 600 /root/.ssh/known_hosts
-    - ssh-keyscan -H github.com > /etc/ssh/ssh_known_hosts 2> /dev/null
-
-    # push service changes
-    - git clone git@github.com:enowars/enowars4-vulnbox-services.git
-    - cd enowars4-vulnbox-services
-    - rm -rf flug/
-    - cp -r ../service/ flug/
-    - git add flug/
-    - git commit -m 'Update flug service' && git push origin HEAD:master || echo -e "\e[32m\nSkipping git push. No changes in service.\e[0m"
-
-    # push checker changes
-    - cd -
-    - git clone git@github.com:enowars/enowars4-vulnbox-checkers.git
-    - cd enowars4-vulnbox-checkers
-    - rm -rf flug/
-    - cp -r ../checker/ flug/
-    - git add flug/
-    - git commit -m 'Update flug checker' && git push origin HEAD:master || echo -e "\e[32m\nSkipping git push. No changes in checker.\e[0m"
+    - apk update && apk add curl bash
+    - curl -s https://$${ACCESS_TOKEN}@raw.githubusercontent.com/enowars/Enowars4DevOps/master/drone-opennebula/push-services.sh | bash -s flug
 
 - name: trigger-vm-image-creation
   image: plugins/downstream
