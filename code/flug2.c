@@ -128,7 +128,7 @@ int register_user(){
     int is_file_here;
 
     char new_user_file[BUFF_LEN + 13];
-    strcpy(new_user_file, "../users/");
+    strcpy(new_user_file, "/users/");
     strcat(new_user_file, new_username);
 
     is_file_here = access(new_user_file, F_OK);
@@ -175,7 +175,7 @@ int count_lines(char path[]){
 int list_users(){
     DIR *d;
     struct dirent *dir;
-    d = opendir("../users");
+    d = opendir("/users");
     if (d){
         while ((dir = readdir(d)) != NULL){
             if(!strcmp(dir->d_name,".") || !strcmp(dir->d_name,"..")){
@@ -194,7 +194,7 @@ int add_ticket(char username[]){
     unsigned long long  random = random_64_bit();
     char * path= (char*)malloc(BUFF_LEN+13);
 
-    strcpy(path,"../users/");
+    strcpy(path,"/users/");
     strcat(path,username);
 
     int lines = count_lines(path);
@@ -210,7 +210,7 @@ int add_ticket(char username[]){
         char * stringify_random= (char*)malloc(20);
 
         sprintf(stringify_random,"%llu",(unsigned long long)random);
-        strcpy(tickets_path,"../tickets/");
+        strcpy(tickets_path,"/tickets/");
         strcat(tickets_path,stringify_random);
 
         FILE * tickets_file = fopen(tickets_path,"w");
@@ -252,7 +252,7 @@ int view_ticket(){
     scanf("%20s",id);
 
     char path[40];
-    strcpy(path,"../tickets/");
+    strcpy(path,"/tickets/");
     strcat(path,id);
 
     FILE * ticket = fopen(path,"r");
@@ -281,7 +281,7 @@ int view_ticket(){
 }
 
 int check_anon_user(){
-    if( access( "../users/Anonymous", F_OK ) != -1 ) {
+    if( access( "/users/Anonymous", F_OK ) != -1 ) {
         // user exists
         return 0;
     } else {
@@ -290,7 +290,7 @@ int check_anon_user(){
         char stringify_random[20];
         sprintf(stringify_random,"%llu",(unsigned long long)random);
 
-        FILE* userfile=fopen("../users/Anonymous", "w");
+        FILE* userfile=fopen("/users/Anonymous", "w");
         fprintf(userfile, "%s %s\n", "Anonymous", stringify_random);
         fclose(userfile);
         return -1;
@@ -300,7 +300,7 @@ int check_anon_user(){
 
 int view_my_tickets(char username[]){
     char path[BUFF_LEN + 14];
-    strcpy(path,"../users/");
+    strcpy(path,"/users/");
     strcat(path,username);
     FILE * tickets = fopen(path,"r");
 
@@ -371,7 +371,7 @@ int login(){
     }
     
     char *  user_file_path= (char*)calloc(BUFF_LEN + 13,sizeof(char));
-    strcpy(user_file_path, "../users/");
+    strcpy(user_file_path, "/users/");
     strcat(user_file_path, username_put_in);
     
     
@@ -388,8 +388,6 @@ int login(){
         puts("password is wrong");
         return -1;
     }
-    //TODO: nov meni za add ticket
-    //TODO: while loop za logiko ko si loged in idk.
     puts("password is ok");
     
     logged_in(username);
@@ -406,18 +404,18 @@ int login(){
 
 int initdb(){
     //check and create user db
-    DIR* dir = opendir("../users/");
+    DIR* dir = opendir("/users/");
     if (!dir) {
  //no folder
-        mkdir("../users/", 0777);
+        mkdir("/users/", 0777);
     } else {
         closedir(dir);
     }
     
-    dir = opendir("../tickets/");
+    dir = opendir("/tickets/");
     if (!dir) {
  //no folder
-        mkdir("../tickets/", 0777);
+        mkdir("/tickets/", 0777);
     } else {
         closedir(dir);
     }
