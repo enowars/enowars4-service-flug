@@ -263,12 +263,20 @@ int view_ticket(){
 
     char data[MAXDATA];
     puts("The contents of your ticket:");
-
-    while (fgets(data, MAXDATA, ticket) != NULL){
-        
-        printf("%s", data); //TODO make it nice later
-    }
-
+    
+    //print origin
+    fgets(data, MAXDATA, ticket);
+    printf("Origin airport:\n%s", data);
+    //print destination
+    fgets(data, MAXDATA, ticket);
+    printf("Destination airport:\n%s", data);
+    //print fl
+    fgets(data, MAXDATA, ticket);
+    printf("Flight number:\n%s", data);
+    //print ticker content
+    fgets(data, MAXDATA, ticket);
+    printf("Ticker content:\n%s", data);
+    
     fclose(ticket);
 }
 
