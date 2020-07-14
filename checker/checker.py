@@ -84,6 +84,10 @@ class FlugChecker(BaseChecker):
             p.recvline()
             p.recvline()
             p.recvline()
+            p.recvline()
+            p.recvline()
+            p.recvline()
+            p.recvline()
             flag2 = p.recvline().decode('utf-8')
         except:
             raise BrokenServiceException("Unable to get flag from the service [getflag]")
