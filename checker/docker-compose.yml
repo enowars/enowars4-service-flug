@@ -6,12 +6,12 @@ services:
       - 7474:8000
     environment:
      - MONGO_ENABLED=1
-     - MONGO_HOST=flug-db
+     - MONGO_HOST=flug-mongodb
      - MONGO_PORT=27022
      - MONGO_USER=enoislove
      - MONGO_PASSWORD=enoislife
     
-  mongodb:
+  flug-mongodb:
     image: mongo
     volumes:
       - ./flug_db_data:/data/db
