@@ -10,11 +10,5 @@ services:
      - MONGO_PORT=27022
      - MONGO_USER=enoislove
      - MONGO_PASSWORD=enoislife
-    
-  flug-mongodb:
-    image: mongo
-    volumes:
-      - ./flug_db_data:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: enoislove
-      MONGO_INITDB_ROOT_PASSWORD: enoislife
+  mongodb:
+    image: mongo
