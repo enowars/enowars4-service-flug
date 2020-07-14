@@ -402,6 +402,7 @@ int login(){
     fclose(fptr);
 }
 
+/*
 int initdb(){
     //check and create user db
     DIR* dir = opendir("/users/");
@@ -421,9 +422,10 @@ int initdb(){
     }
     
 }
+*/
 
 int main(){
-    initdb();
+    //initdb();
     char S[8];
     alarm(120);
     
