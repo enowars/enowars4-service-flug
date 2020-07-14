@@ -1,8 +1,6 @@
 FROM ubuntu:latest
 RUN apt-get update && apt-get install -y make gcc socat
 
-#COPY ./code /code
-WORKDIR /code
+WORKDIR /app
 
-ENTRYPOINT [ "bash", "/bin/startService.sh" ]
-#ENTRYPOINT [ "ls", "/code" ]
+ENTRYPOINT [ "bash", "/app/startService.sh" ]
