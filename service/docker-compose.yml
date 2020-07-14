@@ -5,6 +5,6 @@ services:
     volumes:
       - ./users:/users
       - ./tickets:/tickets
-      - ./bin:/bin
+      - ./app:/app
     ports:
       - 7478:7478
