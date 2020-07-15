@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-from telnetlib import Telnet
-from enochecker import *
+from enochecker import OfflineException, BrokenServiceException, run, BaseChecker
 from string import ascii_lowercase
 from random import randrange
 
@@ -36,7 +35,7 @@ class FlugChecker(BaseChecker):
 
 
         try:
-            nc = Telnet(self.address,port)
+            nc = self.connect(port=port)
         except:
             raise OfflineException("Unable to connect to the service [putflag]")
 
@@ -104,7 +103,7 @@ class FlugChecker(BaseChecker):
         """
 
         try:
-            nc = Telnet(self.address, port)
+            nc = self.connect(port=port)
         except:
             raise OfflineException("Connection failed [getflag]")
 
@@ -152,8 +151,7 @@ class FlugChecker(BaseChecker):
         """
 
         try:
-            #TODO fix from localhost to self.address for production
-            nc = Telnet(self.address, port)
+            nc = self.connect(port=port)
         except:
             raise OfflineException("Unable to connect to the service [putnoise]")
 
@@ -209,7 +207,7 @@ class FlugChecker(BaseChecker):
     def getnoise(self):  # type: () -> None
 
         try:
-            nc = Telnet(self.address, port)
+            nc = self.connect(port=port)
         except:
             raise OfflineException("Connection failed [getnoise]")
 
@@ -255,7 +253,7 @@ class FlugChecker(BaseChecker):
         self.getnoise()
 
         try:
-            nc = Telnet(self.address, port)
+            nc = self.connect(port=port)
         except:
             raise OfflineException("Connection failed [havoc]")
         pass_test = True
