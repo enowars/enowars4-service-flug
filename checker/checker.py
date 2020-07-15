@@ -28,7 +28,7 @@ class FlugChecker(BaseChecker):
 
         try:
             #TODO fix from localhost to self.address for production
-            nc = telnetlib.Telnet("localhost", port)
+            nc = telnetlib.Telnet(self.address, port)
         except:
             raise OfflineException("Unable to connect to the service [putflag]")
 
@@ -81,7 +81,7 @@ class FlugChecker(BaseChecker):
 
     def getflag(self):  # type: () -> None
         try:
-            nc = telnetlib.Telnet("localhost", port)
+            nc = telnetlib.Telnet(self.address, port)
         except:
             raise OfflineException("Connection failed [getflag]")
 
