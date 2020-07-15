@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
  
-from pwn import * //to be removed
-
+from pwn import * 
 import sys
 import time
 from enochecker import *
@@ -27,51 +26,43 @@ class FlugChecker(BaseChecker):
         password = self.gen_password()
 
         try:
-            nc = telnetlib.Telnet(self.adderess, port)
+            p = remote(self.address,port)
         except:
             raise OfflineException("Unable to connect to the service [putflag]")
 
 
 
         try:    
-            nc.read_until(b"================\n")
-            nc.read_until(b"================\n")
-            nc.write(b"2")
-            
-            nc.read_until(b"Please input your new username:")
-            nc.write(bytes(username,'utf-8'))
-            nc.read_until(b"Please input your password:\n")
-            nc.write(bytes(password,'utf-8'))
+            p.recvuntil(b"================\n")
+            p.sendlineafter(b"================\n",b"2")
+            p.sendlineafter(b"Please input your new username:",bytes(username,'utf-8'))
+            p.sendlineafter(b"Please input your password:\n",bytes(password,'utf-8'))
         except:
             raise BrokenServiceException("Registration failed [putflag]")
 
 
         try:
-            nc.read_until(b"================\n")
-            nc.read_until(b"================\n")
-            nc.write(b"1")
-            nc.read_until(b"Please input your username:\n",
-            nc.write(bytes(username,'utf-8'))
-            nc.read_until(b"Please input your password:\n",
-            nc.write(bytes(password,'utf-8'))
+            p.recvuntil(b"================\n")
+            p.sendlineafter(b"================\n",b"1")
+            p.sendlineafter(b"Please input your username:\n",bytes(username,'utf-8'))
+            p.sendlineafter(b"Please input your password:\n",bytes(password,'utf-8'))
         except:
             raise BrokenServiceException("Login failed [putflag]")
 
 
         try:
-            nc.read_until(b"================\n")   
-            nc.read_until(b"================\n")
-            nc.write(b"1")
+            p.recvuntil(b"================\n")   
+            p.sendlineafter(b"================\n",b"1")
             time.sleep(.1)
-            nc.read_until(b"Please input origin airport\n")
-            nc.write(bytes(self.noise,'utf-8'))
-            nc.read_until(b"Please input destination airport\n")
-            nc.write(bytes(self.noise,'utf-8'))
-            nc.read_until(b"Enter the content of your new ticket\n")
-            nc.write(bytes(self.flag,'utf-8'))
+            p.recvuntil(b"Please input origin airport\n")
+            p.sendline(bytes(self.noise,'utf-8'))
+            p.recvuntil(b"Please input destination airport\n")
+            p.sendline(bytes(self.noise,'utf-8'))
+            p.recvuntil(b"Enter the content of your new ticket\n")
+            p.sendline(bytes(self.flag,'utf-8'))
             time.sleep(.1)
-            nc.read_until("Your new ticket ID is:\n")
-            ticket_id = nc.read_until(b"\n").decode('utf-8')
+            p.recvuntil("Your new ticket ID is:\n")
+            ticket_id = p.recvline().decode('utf-8')
             self.team_db[self.flag] = (username,password,ticket_id)
         except:
             raise BrokenServiceException("Put flag failed [putflag]")
