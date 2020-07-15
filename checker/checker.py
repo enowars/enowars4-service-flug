@@ -27,6 +27,7 @@ class FlugChecker(BaseChecker):
         password = self.gen_password()
 
         try:
+            #TODO fix from localhost to self.address for production
             nc = telnetlib.Telnet("localhost", port)
         except:
             raise OfflineException("Unable to connect to the service [putflag]")
@@ -80,25 +81,27 @@ class FlugChecker(BaseChecker):
 
     def getflag(self):  # type: () -> None
         try:
-            p = remote(self.address,port)
+            nc = telnetlib.Telnet("localhost", port)
         except:
             raise OfflineException("Connection failed [getflag]")
 
-
         try:
-            p.recvuntil(b"================\n")
-            p.sendlineafter(b"================\n","3")
-            p.sendlineafter(b"Enter the unique id of your ticket",bytes(self.team_db[self.flag][2],'utf-8'))
-            p.recvline()
-            p.recvline()
-            p.recvline()
-            p.recvline()
-            p.recvline()
-            p.recvline()
-            p.recvline()
-            p.recvline()
-            p.recvline()
-            flag2 = p.recvline().decode('utf-8')
+            nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+            nc.write(b"3\n")
+            nc.read_until(b"Enter the unique id of your ticket")
+            nc.write(bytes(self.team_db[self.flag][2] + "\n", 'utf-8'))
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            flag2 = nc.read_until(b"\n").decode('utf-8')
         except:
             raise BrokenServiceException("Unable to get flag from the service [getflag]")
         if flag2.strip() != self.flag.strip():
