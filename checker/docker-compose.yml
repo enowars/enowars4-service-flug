@@ -4,11 +4,14 @@ services:
     build: .
     ports:
       - 7474:8000
-    environment:
-     - MONGO_ENABLED=1
-     - MONGO_HOST=flug-mongodb
-     - MONGO_PORT=27022
-     - MONGO_USER=enoislove
+    environment:
+     - MONGO_ENABLED=1
+     - MONGO_HOST=flug-mongodb
+     - MONGO_PORT=27017
+     - MONGO_USER=enoislove
      - MONGO_PASSWORD=enoislife
-  mongodb:
+  flug-mongodb:
     image: mongo
+    environment: 
+      MONGO_INITDB_ROOT_USERNAME: enoislove
+      MONGO_INITDB_ROOT_PASSWORD: enoislife

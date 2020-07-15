@@ -1,3 +1,4 @@
 #we ignore this
-users/*
-tickets/*
+users
+tickets
+flug_db_data
