@@ -1,11 +1,7 @@
 #!/usr/bin/env python3
- 
-from pwn import * #o be removed
-import telnetlib
-import sys
-import time
-from enochecker import *
-import string
+from telnetlib import Telnet
+from enochecker import OfflineException, BrokenServiceException, BaseChecker, run
+from string import ascii_lowercase
 from random import randrange
 
 
@@ -28,7 +24,7 @@ class FlugChecker(BaseChecker):
 
         try:
             #TODO fix from localhost to self.address for production
-            nc = telnetlib.Telnet(self.address, port)
+            nc = Telnet(self.address, port)
         except:
             raise OfflineException("Unable to connect to the service [putflag]")
 
@@ -64,14 +60,12 @@ class FlugChecker(BaseChecker):
             nc.read_until(b"================\n")   
             nc.read_until(b"================\n")
             nc.write(b"1\n")
-            time.sleep(.1)
             nc.read_until(b"Please input origin airport\n")
             nc.write(bytes(self.noise + "\n",'utf-8'))
             nc.read_until(b"Please input destination airport\n")
             nc.write(bytes(self.noise + "\n",'utf-8'))
             nc.read_until(b"Enter the content of your new ticket\n")
             nc.write(bytes(self.flag + "\n",'utf-8'))
-            time.sleep(.1)
             nc.read_until(b"Your new ticket ID is:\n")
             ticket_id = nc.read_until(b"\n").decode('utf-8')
             self.team_db[self.flag] = (username,password,ticket_id)
@@ -81,7 +75,7 @@ class FlugChecker(BaseChecker):
 
     def getflag(self):  # type: () -> None
         try:
-            nc = telnetlib.Telnet(self.address, port)
+            nc = Telnet(self.address, port)
         except:
             raise OfflineException("Connection failed [getflag]")
 
@@ -101,7 +95,7 @@ class FlugChecker(BaseChecker):
             nc.read_until(b"\n")
             nc.read_until(b"\n")
             nc.read_until(b"\n")
-            flag2 = nc.read_until(b"\n").decode('utf-8')
+            flag2 = nc.read_until(b"\n").decode('utf-8').replace('\n','')
         except:
             raise BrokenServiceException("Unable to get flag from the service [getflag]")
         if flag2.strip() != self.flag.strip():
@@ -109,76 +103,88 @@ class FlugChecker(BaseChecker):
 
 
     def putnoise(self):  # type: () -> None
-
         username = self.gen_user()
         password = self.gen_password()
 
         try:
-            p = remote(self.address,port)
+            #TODO fix from localhost to self.address for production
+            nc = Telnet(self.address, port)
         except:
             raise OfflineException("Unable to connect to the service [putnoise]")
 
 
 
         try:    
-            p.recvuntil(b"================\n")
-            p.sendlineafter(b"================\n",b"2")
-            p.sendlineafter(b"Please input your new username:",bytes(username,'utf-8'))
-            p.sendlineafter(b"Please input your password:\n",bytes(password,'utf-8'))
+            nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+            nc.write(b"2\n")
+            
+            nc.read_until(b"Please input your new username:")
+            nc.write(bytes(username + "\n",'utf-8'))
+            nc.read_until(b"Please input your password:\n")
+            nc.write(bytes(password + "\n",'utf-8'))
         except:
             raise BrokenServiceException("Registration failed [putnoise]")
 
 
         try:
-            p.recvuntil(b"================\n")
-            p.sendlineafter(b"================\n",b"1")
-            p.sendlineafter(b"Please input your username:\n",bytes(username,'utf-8'))
-            p.sendlineafter(b"Please input your password:\n",bytes(password,'utf-8'))
+            nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+            nc.write(b"1\n")
+            nc.read_until(b"Please input your username:\n")
+            nc.write(bytes(username + "\n",'utf-8'))
+            nc.read_until(b"Please input your password:\n")
+            nc.write(bytes(password + "\n",'utf-8'))
         except:
             raise BrokenServiceException("Login failed [putnoise]")
 
 
         try:
-            p.recvuntil(b"================\n")   
-            p.sendlineafter(b"================\n",b"1")
-            time.sleep(.1)
-            p.recvuntil(b"Please input origin airport\n")
-            p.sendline(bytes(self.noise,'utf-8'))
-            p.recvuntil(b"Please input destination airport\n")
-            p.sendline(bytes(self.noise,'utf-8'))
-            p.recvuntil(b"Enter the content of your new ticket\n")
-            p.sendline(bytes(self.noise,'utf-8'))
-            time.sleep(.1)
-            p.recvuntil("Your new ticket ID is:\n")
-            noise_id = p.recvline().decode('utf-8')
-            self.team_db[self.noise] = (username,password,noise_id)
+            nc.read_until(b"================\n")   
+            nc.read_until(b"================\n")
+            nc.write(b"1\n")
+            nc.read_until(b"Please input origin airport\n")
+            nc.write(bytes(self.noise + "\n",'utf-8'))
+            nc.read_until(b"Please input destination airport\n")
+            nc.write(bytes(self.noise + "\n",'utf-8'))
+            nc.read_until(b"Enter the content of your new ticket\n")
+            nc.write(bytes(self.noise + "\n",'utf-8'))
+            nc.read_until(b"Your new ticket ID is:\n")
+            ticket_id = nc.read_until(b"\n").decode('utf-8').replace('\n','')
+            self.team_db[self.noise] = (username,password,ticket_id)
         except:
-            raise BrokenServiceException("Put noise failed [putnoise]")
-
-
+            raise BrokenServiceException("Put flag failed [putnoise]")
         self.team_db["noise"] = self.noise
     def getnoise(self):  # type: () -> None
 
         try:
-            p = remote(self.address,port)
+            nc = Telnet(self.address, port)
         except:
-            raise OfflineException("Connection failed [getflag]")
-
+            raise OfflineException("Connection failed [getnoise]")
 
         try:
-            p.recvuntil(b"================\n")
-            p.sendlineafter(b"================\n","3")
-            p.sendlineafter(b"Enter the unique id of your ticket",bytes(self.team_db[self.noise][2],'utf-8'))
-            p.recvline()
-            p.recvline()
-            p.recvline()
-            p.recvline()
-            p.recvline()
-            noise = p.recvline().decode('utf-8')
+            nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+            nc.write(b"3\n")
+            nc.read_until(b"Enter the unique id of your ticket")
+            nc.write(bytes(self.team_db[self.noise][2] + "\n", 'utf-8'))
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            nc.read_until(b"\n")
+            flag2 = nc.read_until(b"\n").decode('utf-8').replace('\n','')
         except:
             raise BrokenServiceException("Unable to get noise from the service [getnoise]")
-        if noise.strip() != self.noise.strip():
+        if flag2.strip() != self.flag.strip().replace('\n',''):
             raise BrokenServiceException("The noises dont mach! [getnoise]")
+
         """
         This method retrieves noise in the service.
         The noise to be retrieved is inside self.flag
@@ -195,9 +201,9 @@ class FlugChecker(BaseChecker):
         self.getnoise()
 
         try:
-            p = remote(self.address,port)
+            nc = Telnet(self.address, port)
         except:
-            raise OfflineException('service is unreachable [havoc]')
+            raise OfflineException("Connection failed [havoc]")
         pass_test = True
 
 
@@ -210,39 +216,52 @@ class FlugChecker(BaseChecker):
         test_pass = self.team_db[self.noise][1]
 
         #we check for words in these arrs when checking the menu
-        must_be_in_menu1 = ['menu','login','register','view ticket','exit','about','anonymous','bookings']
-        must_be_in_view_ticket_menu = ['ticket','id']
+        must_be_in_menu1 = ['login','register','view ticket','exit','about','anonymous','bookings']
+        must_be_in_view_ticket_menu = ['enter','ticket','id']
         must_be_in_menu_when_logged_in = ['buy ticket','view my tickets','view ticket','logout']
 
         #Check first menu
-        menu1 = p.recv(210).decode('utf-8').lower()
+        nc.read_until(b"================\n")
+        nc.read_until(b"================\n")
+        menu1 = nc.read_until(b"================\n").decode().lower()
         for elem in must_be_in_menu1:
             if elem not in menu1:
                 print('failed first test: \'{}\' not in menu'.format(elem))
                 raise BrokenServiceException('Menu1 isnt ok [havoc]')
 
-        p.sendline(b'3')
-        menu_after_view_ticket_global = p.recv(200).decode('utf-8').lower()
-
+        nc.write(b'3\n')
+        menu_after_view_ticket_global = nc.read_until(b'ticket\n').decode('utf-8').lower()
         #Check the view ticket message
         for elem in must_be_in_view_ticket_menu:
             if elem not in menu_after_view_ticket_global:
                 print('failed second test: \'{}\' not in menu'.format(elem))
                 raise BrokenServiceException('View Ticket menu is not ok [havoc]')
 
-        p.sendline(test_ticket)
+        nc.write(bytes(test_ticket + '\n','utf-8'))
+        ticket_message = nc.read_until(b'\n').decode().lower()
+        if 'the contents of your ticket' not in ticket_message:
+            raise BrokenServiceException('Cannot input ticket in menu option 3')
 
-        p.sendlineafter(b"================\n",b'1')
-        p.sendlineafter(b'Please input your username:\n',bytes(test_user,'utf-8'))
-        p.sendlineafter(b'Please input your password:\n',bytes(test_pass,'utf-8'))
-        logged_in_menu =p.recv(130).decode('utf-8').lower()
-        logged_in_menu +=p.recv(130).decode('utf-8').lower()
 
+        nc.read_until(b"================\n")
+        nc.read_until(b"================\n")
+        nc.read_until(b"================\n")
+        nc.write(b'1\n')
+        nc.read_until(b'\n')
+        nc.write(bytes(test_user+'\n','utf-8'))
+        nc.read_until(b'\n')
+        nc.write(bytes(test_pass+'\n','utf-8'))
+
+        nc.read_until(b"================\n")
+
+        logged_in_menu =nc.read_until(b"================\n").decode().lower()
         #Check the menu when logged in
         for elem in must_be_in_menu_when_logged_in:
             if elem not in logged_in_menu:
                 print('failed last test: \'{}\' not in menu'.format(elem))
                 raise BrokenServiceException('menu when logged isnt ok [havoc]')
+
+
 
         """
         This method unleashes havoc on the app -> Do whatever you must to prove the service still works. Or not.
@@ -253,7 +272,8 @@ class FlugChecker(BaseChecker):
                 The preferred way to report Errors in the service is by raising an appropriate EnoException
         """
 
-    def exploit(self):
+
+    def exploit(self):  
         #1st vuln
 
         p = remote(self.address,port)
@@ -328,16 +348,21 @@ class FlugChecker(BaseChecker):
         
         print(flag)
 
+
+
     def gen_user(self): 
-        source = list(string.ascii_lowercase)
+        source = list(ascii_lowercase)
         username =''
         for num in range(25):
             rand_int = randrange(25)
             username += source[rand_int]
         return username
 
+
+
+
     def gen_password(self): 
-        source = list(string.ascii_lowercase)
+        source = list(ascii_lowercase)
         password =''
         for num in range(25):
             rand_int = randrange(25)
