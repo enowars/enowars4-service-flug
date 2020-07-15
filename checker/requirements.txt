@@ -1,3 +1,2 @@
 enochecker
-pwntools
 gunicorn[eventlet]

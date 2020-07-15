@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from telnetlib import Telnet
-from enochecker import OfflineException, BrokenServiceException, BaseChecker, run
+from enochecker import *
 from string import ascii_lowercase
 from random import randrange
 
@@ -22,9 +22,21 @@ class FlugChecker(BaseChecker):
         username = self.gen_user()
         password = self.gen_password()
 
+
+        """
+        This method stores a flag in the service.
+        In case multiple flags are provided, self.flag_idx gives the appropriate index.
+        The flag itself can be retrieved from self.flag.
+        On error, raise an Eno Exception.
+        :raises EnoException on error
+        :return this function can return a result if it wants
+                if nothing is returned, the service status is considered okay.
+                the preferred way to report errors in the service is by raising an appropriate enoexception
+        """
+
+
         try:
-            #TODO fix from localhost to self.address for production
-            nc = Telnet(self.address, port)
+            nc = Telnet(self.address,port)
         except:
             raise OfflineException("Unable to connect to the service [putflag]")
 
@@ -36,11 +48,13 @@ class FlugChecker(BaseChecker):
             nc.read_until(b"================\n")
             nc.write(b"2\n")
             
-            nc.read_until(b"Please input your new username:")
+            nc.read_until(b"Please input your new username:\n")
             nc.write(bytes(username + "\n",'utf-8'))
             nc.read_until(b"Please input your password:\n")
             nc.write(bytes(password + "\n",'utf-8'))
         except:
+            nc.close()
+            
             raise BrokenServiceException("Registration failed [putflag]")
 
 
@@ -53,6 +67,8 @@ class FlugChecker(BaseChecker):
             nc.read_until(b"Please input your password:\n")
             nc.write(bytes(password + "\n",'utf-8'))
         except:
+            nc.close()
+
             raise BrokenServiceException("Login failed [putflag]")
 
 
@@ -70,10 +86,23 @@ class FlugChecker(BaseChecker):
             ticket_id = nc.read_until(b"\n").decode('utf-8')
             self.team_db[self.flag] = (username,password,ticket_id)
         except:
-            raise BrokenServiceException("Put flag failed [putflag]")
+            nc.close()
 
+            raise BrokenServiceException("Put flag failed [putflag]")
+        nc.close()
 
     def getflag(self):  # type: () -> None
+
+        """
+        This method retrieves a flag from the service.
+        Use self.flag to get the flag that needs to be recovered and self.round to get the round the flag was placed in.
+        On error, raise an EnoException.
+        :raises EnoException on error
+        :return this function can return a result if it wants
+                if nothing is returned, the service status is considered okay.
+                the preferred way to report errors in the service is by raising an appropriate enoexception
+        """
+
         try:
             nc = Telnet(self.address, port)
         except:
@@ -97,14 +126,30 @@ class FlugChecker(BaseChecker):
             nc.read_until(b"\n")
             flag2 = nc.read_until(b"\n").decode('utf-8').replace('\n','')
         except:
+
+            nc.close()
             raise BrokenServiceException("Unable to get flag from the service [getflag]")
+
         if flag2.strip() != self.flag.strip():
+            nc.close()
             raise BrokenServiceException("The flags dont mach! [getflag]")
 
+        nc.close()
 
     def putnoise(self):  # type: () -> None
         username = self.gen_user()
         password = self.gen_password()
+
+        """
+        This method stores noise in the service. The noise should later be recoverable.
+        The difference between noise and flag is, tht noise does not have to remain secret for other teams.
+        This method can be called many times per round. Check how often using self.flag_idx.
+        On error, raise an EnoException.
+        :raises EnoException on error
+        :return this function can return a result if it wants
+                if nothing is returned, the service status is considered okay.
+                the preferred way to report errors in the service is by raising an appropriate enoexception
+        """
 
         try:
             #TODO fix from localhost to self.address for production
@@ -125,6 +170,7 @@ class FlugChecker(BaseChecker):
             nc.read_until(b"Please input your password:\n")
             nc.write(bytes(password + "\n",'utf-8'))
         except:
+            nc.close()
             raise BrokenServiceException("Registration failed [putnoise]")
 
 
@@ -137,6 +183,7 @@ class FlugChecker(BaseChecker):
             nc.read_until(b"Please input your password:\n")
             nc.write(bytes(password + "\n",'utf-8'))
         except:
+            nc.close()
             raise BrokenServiceException("Login failed [putnoise]")
 
 
@@ -154,8 +201,11 @@ class FlugChecker(BaseChecker):
             ticket_id = nc.read_until(b"\n").decode('utf-8').replace('\n','')
             self.team_db[self.noise] = (username,password,ticket_id)
         except:
+            nc.close()
             raise BrokenServiceException("Put flag failed [putnoise]")
         self.team_db["noise"] = self.noise
+        nc.close()
+
     def getnoise(self):  # type: () -> None
 
         try:
@@ -181,8 +231,10 @@ class FlugChecker(BaseChecker):
             nc.read_until(b"\n")
             flag2 = nc.read_until(b"\n").decode('utf-8').replace('\n','')
         except:
+            nc.close()
             raise BrokenServiceException("Unable to get noise from the service [getnoise]")
         if flag2.strip() != self.flag.strip().replace('\n',''):
+            nc.close()
             raise BrokenServiceException("The noises dont mach! [getnoise]")
 
         """
@@ -196,6 +248,8 @@ class FlugChecker(BaseChecker):
                 if nothing is returned, the service status is considered okay.
                 the preferred way to report errors in the service is by raising an appropriate enoexception
         """
+        nc.close()
+
     def havoc(self):  # type: () -> None
         self.putnoise()
         self.getnoise()
@@ -226,6 +280,7 @@ class FlugChecker(BaseChecker):
         menu1 = nc.read_until(b"================\n").decode().lower()
         for elem in must_be_in_menu1:
             if elem not in menu1:
+                nc.close()
                 print('failed first test: \'{}\' not in menu'.format(elem))
                 raise BrokenServiceException('Menu1 isnt ok [havoc]')
 
@@ -234,12 +289,14 @@ class FlugChecker(BaseChecker):
         #Check the view ticket message
         for elem in must_be_in_view_ticket_menu:
             if elem not in menu_after_view_ticket_global:
+                nc.close()
                 print('failed second test: \'{}\' not in menu'.format(elem))
                 raise BrokenServiceException('View Ticket menu is not ok [havoc]')
 
         nc.write(bytes(test_ticket + '\n','utf-8'))
         ticket_message = nc.read_until(b'\n').decode().lower()
         if 'the contents of your ticket' not in ticket_message:
+            nc.close()
             raise BrokenServiceException('Cannot input ticket in menu option 3')
 
 
@@ -258,9 +315,11 @@ class FlugChecker(BaseChecker):
         #Check the menu when logged in
         for elem in must_be_in_menu_when_logged_in:
             if elem not in logged_in_menu:
+                nc.close()
                 print('failed last test: \'{}\' not in menu'.format(elem))
                 raise BrokenServiceException('menu when logged isnt ok [havoc]')
 
+        nc.close()
 
 
         """
@@ -271,7 +330,6 @@ class FlugChecker(BaseChecker):
                 If nothing is returned, the service status is considered okay.
                 The preferred way to report Errors in the service is by raising an appropriate EnoException
         """
-
 
     def exploit(self):  
         #1st vuln
