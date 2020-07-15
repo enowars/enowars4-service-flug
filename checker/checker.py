@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
  
-from pwn import * //to be removed
-
+from pwn import * #o be removed
+import telnetlib
 import sys
 import time
 from enochecker import *
@@ -27,7 +27,7 @@ class FlugChecker(BaseChecker):
         password = self.gen_password()
 
         try:
-            nc = telnetlib.Telnet(self.adderess, port)
+            nc = telnetlib.Telnet("localhost", port)
         except:
             raise OfflineException("Unable to connect to the service [putflag]")
 
@@ -36,12 +36,13 @@ class FlugChecker(BaseChecker):
         try:    
             nc.read_until(b"================\n")
             nc.read_until(b"================\n")
-            nc.write(b"2")
+            nc.read_until(b"================\n")
+            nc.write(b"2\n")
             
             nc.read_until(b"Please input your new username:")
-            nc.write(bytes(username,'utf-8'))
+            nc.write(bytes(username + "\n",'utf-8'))
             nc.read_until(b"Please input your password:\n")
-            nc.write(bytes(password,'utf-8'))
+            nc.write(bytes(password + "\n",'utf-8'))
         except:
             raise BrokenServiceException("Registration failed [putflag]")
 
@@ -49,11 +50,11 @@ class FlugChecker(BaseChecker):
         try:
             nc.read_until(b"================\n")
             nc.read_until(b"================\n")
-            nc.write(b"1")
-            nc.read_until(b"Please input your username:\n",
-            nc.write(bytes(username,'utf-8'))
-            nc.read_until(b"Please input your password:\n",
-            nc.write(bytes(password,'utf-8'))
+            nc.write(b"1\n")
+            nc.read_until(b"Please input your username:\n")
+            nc.write(bytes(username + "\n",'utf-8'))
+            nc.read_until(b"Please input your password:\n")
+            nc.write(bytes(password + "\n",'utf-8'))
         except:
             raise BrokenServiceException("Login failed [putflag]")
 
@@ -61,16 +62,16 @@ class FlugChecker(BaseChecker):
         try:
             nc.read_until(b"================\n")   
             nc.read_until(b"================\n")
-            nc.write(b"1")
+            nc.write(b"1\n")
             time.sleep(.1)
             nc.read_until(b"Please input origin airport\n")
-            nc.write(bytes(self.noise,'utf-8'))
+            nc.write(bytes(self.noise + "\n",'utf-8'))
             nc.read_until(b"Please input destination airport\n")
-            nc.write(bytes(self.noise,'utf-8'))
+            nc.write(bytes(self.noise + "\n",'utf-8'))
             nc.read_until(b"Enter the content of your new ticket\n")
-            nc.write(bytes(self.flag,'utf-8'))
+            nc.write(bytes(self.flag + "\n",'utf-8'))
             time.sleep(.1)
-            nc.read_until("Your new ticket ID is:\n")
+            nc.read_until(b"Your new ticket ID is:\n")
             ticket_id = nc.read_until(b"\n").decode('utf-8')
             self.team_db[self.flag] = (username,password,ticket_id)
         except:
