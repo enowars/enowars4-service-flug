@@ -84,6 +84,13 @@ class FlugChecker(BaseChecker):
             nc.read_until(b"Your new ticket ID is:\n")
             ticket_id = nc.read_until(b"\n").decode('utf-8')
             self.team_db[self.flag] = (username,password,ticket_id)
+            nc.read_until(b"================\n")   
+            nc.read_until(b"================\n")
+            nc.write(b'4\n')
+            bookings_check = self.check_bookings(nc)
+            if('Welcome ' in bookings_check):
+                nc.close()
+                raise BrokenServiceException('View Bookings isnt working properly')
         except:
             nc.close()
 
@@ -249,8 +256,6 @@ class FlugChecker(BaseChecker):
         nc.close()
 
     def havoc(self):  # type: () -> None
-        self.putnoise()
-        self.getnoise()
 
         try:
             nc = self.connect(port=port)
@@ -424,6 +429,18 @@ class FlugChecker(BaseChecker):
             rand_int = randrange(25)
             password += source[rand_int]
         return password
+
+
+    def check_bookings(self, telnet):
+        telnet.read_until(b"================\n")
+        telnet.read_until(b"================\n")
+        telnet.read_until(b"================\n")
+        telnet.write(b'4\n')
+        res = telnet.read_until(b'\n').decode('utf-8').strip().replace('\n','')
+        while  res != self.team_db[self.flag][0] or 'Welcome ' in res:
+            res = telnet.read_until(b'\n').decode().strip().replace('\n','')
+        return res
+
 
 
 
