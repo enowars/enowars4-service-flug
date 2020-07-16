@@ -88,7 +88,7 @@ class FlugChecker(BaseChecker):
             nc.read_until(b"================\n")
             nc.write(b'4\n')
             bookings_check = self.check_bookings(nc)
-            if('Welcome ' in bookings_check):
+            if('Welcome to' in bookings_check):
                 nc.close()
                 raise BrokenServiceException('View Bookings isnt working properly')
         except:
@@ -431,7 +431,7 @@ class FlugChecker(BaseChecker):
         return password
 
 
-      def check_bookings(self, telnet):
+    def check_bookings(self, telnet):
         telnet.read_until(b"================\n")
         telnet.read_until(b"================\n")
         telnet.read_until(b"================\n")
