@@ -436,13 +436,10 @@ class FlugChecker(BaseChecker):
         telnet.read_until(b"================\n")
         telnet.read_until(b"================\n")
         telnet.write(b'4\n')
-        res = telnet.read_until(b'\n').decode('utf-8').strip().replace('\n','')
-        while  res != self.team_db[self.flag][0] or 'Welcome ' in res:
-            res = telnet.read_until(b'\n').decode().strip().replace('\n','')
-        return res
-
-
-
+        dump_users=telnet.read_all(timeout=5)
+        list_users=dump_users.split("\n")
+        if not self.team_db[self.flag][0] in list_users:
+            raise BrokenServiceException('user list is broken [putflag]')
 
 
 app = FlugChecker.service
