@@ -46,7 +46,7 @@ int print_menu2(char usename[]){
 int about(){
     puts("Welcome to service flug made by Urban(Lightning5) and Aleks(NOx)");
     puts("There are two vulnerabilities in the service");
-    puts("Do not change the menu in any way (you will get MUMBLED for it), it is not needed for patching any of the vulnerabilities")
+    puts("Do not change the menu in any way (you will get MUMBLED for it), it is not needed for patching any of the vulnerabilities");
     puts("If there are any questions find us on IRC\n");
     puts("Have fun :)");
     
