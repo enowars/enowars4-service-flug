@@ -442,11 +442,16 @@ class FlugChecker(BaseChecker):
 
     def check_bookings(self, telnet):
         print('still working')
-        telnet.read_until(b"================\n")
-        telnet.read_until(b"================\n")
-        telnet.read_until(b"================\n")
-        telnet.write(b'4\n')
-        text = telnet.read_until(b'Welcome to the airport\n').decode().split('\n')
+        try:
+            telnet.read_until(b"================\n")
+            telnet.read_until(b"================\n")
+            telnet.read_until(b"================\n")
+            telnet.write(b'4\n')
+            text = telnet.read_until(b'Welcome to the airport\n').decode().split('\n')
+        except Exception as e:
+            self.info("Failed to Check bookings", exc_info=e)
+            raise BrokenServiceException('User was not found')
+            
         if not self.team_db[self.flag][0] in text:
             self.info('user was not found')
             telnet.close()
