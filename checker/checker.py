@@ -450,6 +450,7 @@ class FlugChecker(BaseChecker):
             text = telnet.read_until(b'Welcome to the airport\n').decode().split('\n')
         except Exception as e:
             self.info("Failed to Check bookings", exc_info=e)
+            telnet.close()
             raise BrokenServiceException('User was not found')
             
         if not self.team_db[self.flag][0] in text:
