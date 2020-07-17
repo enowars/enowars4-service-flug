@@ -494,7 +494,7 @@ class FlugChecker(BaseChecker):
             telnet.read_until(b"================\n")
             telnet.read_until(b"================\n")
             telnet.write(b'4\n')
-            text = telnet.read_until(b'Welcome to the airport\n').decode().split('\n')
+            text = telnet.read_until(b'Welcome to the airport\n', timeout=self.time_remaining).decode().split('\n')
         except Exception as e:
             self.info("Failed to Check bookings", exc_info=e)
             telnet.close()
