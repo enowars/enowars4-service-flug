@@ -63,6 +63,7 @@ class FlugChecker(BaseChecker):
 
             nc.read_until(b"================\n")
             nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
             nc.write(b"1\n")
             nc.read_until(b"Please input your username:\n")
             nc.write(bytes(username + "\n",'utf-8'))
@@ -191,6 +192,8 @@ class FlugChecker(BaseChecker):
         try:
             nc.read_until(b"================\n")
             nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+
             nc.write(b"1\n")
             nc.read_until(b"Please input your username:\n")
             nc.write(bytes(username + "\n",'utf-8'))
@@ -272,19 +275,79 @@ class FlugChecker(BaseChecker):
             raise OfflineException("Connection failed [havoc]")
         pass_test = True
 
-
-        #we create a new ticket with current noise 
-        test_ticket = self.team_db[self.noise][2]
-        test_value = self.noise 
-
         # we login using current noise user
-        test_user = self.team_db[self.noise][0]
-        test_pass = self.team_db[self.noise][1]
+        test_user = self.gen_user()
+        test_pass = self.gen_password()
+        random_value = self.gen_password()
 
         #we check for words in these arrs when checking the menu
         must_be_in_menu1 = ['login','register','view ticket','exit','about','anonymous','bookings']
         must_be_in_view_ticket_menu = ['enter','ticket','id']
         must_be_in_menu_when_logged_in = ['buy ticket','view my tickets','view ticket','logout']
+
+
+        try:
+            self.info('registering a new user,[havoc]')
+            nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+            nc.write(b"2\n")
+
+            nc.read_until(b"Please input your new username:\n")
+            nc.write(bytes(test_user + "\n",'utf-8'))
+            nc.read_until(b"Please input your password:\n")
+            nc.write(bytes(test_pass + "\n",'utf-8'))
+        except:
+            nc.close()
+
+            raise BrokenServiceException('')
+        try:
+            self.info('loggin in as the new user [havoc]')
+
+            nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+            nc.read_until(b"================\n")
+            nc.write(b"1\n")
+            nc.read_until(b"Please input your username:\n")
+            nc.write(bytes(test_user + "\n",'utf-8'))
+            nc.read_until(b"Please input your password:\n")
+            nc.write(bytes(test_pass + "\n",'utf-8'))
+            nc.read_until(b"================\n")
+            logged_in_menu =nc.read_until(b"================\n").decode().lower()
+            #Check the menu when logged in
+            for elem in must_be_in_menu_when_logged_in:
+                if elem not in logged_in_menu:
+                    nc.close()
+                    print('failed last test: \'{}\' not in menu'.format(elem))
+                    raise BrokenServiceException('menu when logged isnt ok [havoc]')
+
+
+        except:
+            nc.close()
+
+            raise BrokenServiceException("Login failed [havoc]")
+
+
+        try:
+            self.info('putting in random value [havoc]')
+            nc.write(b"1\n")
+            nc.read_until(b"Please input origin airport\n")
+            nc.write(bytes(random_value + "\n",'utf-8'))
+            nc.read_until(b"Please input destination airport\n")
+            nc.write(bytes(random_value + "\n",'utf-8'))
+            nc.read_until(b"Enter the content of your new ticket\n")
+            nc.write(bytes(random_value + "\n",'utf-8'))
+            nc.read_until(b"Your new ticket ID is:\n")
+            ticket_id = nc.read_until(b"\n").decode('utf-8')
+            self.info('inserting into db, havoc')
+            nc.read_until(b"================\n")   
+            nc.read_until(b"================\n")
+            nc.write(b"4\n")
+
+        except:
+            nc.close()
+
+            raise BrokenServiceException("Put flag failed [putflag]")
 
         #Check first menu
         nc.read_until(b"================\n")
@@ -305,7 +368,7 @@ class FlugChecker(BaseChecker):
                 print('failed second test: \'{}\' not in menu'.format(elem))
                 raise BrokenServiceException('View Ticket menu is not ok [havoc]')
 
-        nc.write(bytes(test_ticket + '\n','utf-8'))
+        nc.write(bytes(ticket_id + '\n','utf-8'))
         ticket_message = nc.read_until(b'\n').decode().lower()
         if 'the contents of your ticket' not in ticket_message:
             nc.close()
