@@ -5,6 +5,5 @@ services:
     volumes:
       - ./users:/users
       - ./tickets:/tickets
-      - ./app:/app
     ports:
       - 7478:7478
