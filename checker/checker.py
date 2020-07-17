@@ -42,6 +42,7 @@ class FlugChecker(BaseChecker):
 
 
         try:    
+            self.info('connection works, registering a new user')
             nc.read_until(b"================\n")
             nc.read_until(b"================\n")
             nc.read_until(b"================\n")
@@ -58,6 +59,8 @@ class FlugChecker(BaseChecker):
 
 
         try:
+            self.info('loggin in as the new user')
+
             nc.read_until(b"================\n")
             nc.read_until(b"================\n")
             nc.write(b"1\n")
@@ -72,6 +75,7 @@ class FlugChecker(BaseChecker):
 
 
         try:
+            self.info('putting in the flag')
             nc.read_until(b"================\n")   
             nc.read_until(b"================\n")
             nc.write(b"1\n")
@@ -83,14 +87,11 @@ class FlugChecker(BaseChecker):
             nc.write(bytes(self.flag + "\n",'utf-8'))
             nc.read_until(b"Your new ticket ID is:\n")
             ticket_id = nc.read_until(b"\n").decode('utf-8')
+            self.info('inserting into db, putflag')
+
             self.team_db[self.flag] = (username,password,ticket_id)
-            nc.read_until(b"================\n")   
-            nc.read_until(b"================\n")
-            nc.write(b'4\n')
-            bookings_check = self.check_bookings(nc)
-            if('Welcome to' in bookings_check):
-                nc.close()
-                raise BrokenServiceException('View Bookings isnt working properly')
+
+
         except:
             nc.close()
 
@@ -114,7 +115,13 @@ class FlugChecker(BaseChecker):
         except:
             raise OfflineException("Connection failed [getflag]")
 
+        self.info('starting the putflag, calling check_bookings')
+
+        self.check_bookings(nc)
+
+        self.info('check_bookings worked')
         try:
+
             nc.read_until(b"================\n")
             nc.read_until(b"================\n")
             nc.read_until(b"================\n")
@@ -131,6 +138,8 @@ class FlugChecker(BaseChecker):
             nc.read_until(b"\n")
             nc.read_until(b"\n")
             flag2 = nc.read_until(b"\n").decode('utf-8').replace('\n','')
+            self.info('the new flag was retrieved from the service')
+
         except:
 
             nc.close()
@@ -432,15 +441,26 @@ class FlugChecker(BaseChecker):
 
 
     def check_bookings(self, telnet):
+        print('still working')
         telnet.read_until(b"================\n")
         telnet.read_until(b"================\n")
         telnet.read_until(b"================\n")
         telnet.write(b'4\n')
+        text = telnet.read_until(b'Welcome to the airport\n').decode().split('\n')
+        if not self.team_db[self.flag][0] in text:
+            self.info('user was not found')
+            telnet.close()
+            raise BrokenServiceException('User was not found')
+        else:
+            self.info('Use found')
+
+        """
         res = telnet.read_until(b'\n').decode('utf-8').strip().replace('\n','')
         while  res != self.team_db[self.flag][0] or 'Welcome ' in res:
+            print('in view bookings: {}\nin db: '.format(res,self.team_db[self.flag][0]))      
             res = telnet.read_until(b'\n').decode().strip().replace('\n','')
         return res
-
+"""
 
 
 
