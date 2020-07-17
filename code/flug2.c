@@ -274,9 +274,9 @@ int view_ticket(){
     //print fl
     fgets(data, MAXDATA, ticket);
     printf("Flight number:\n%s", data);
-    //print ticker content
+    //print ticket content
     fgets(data, MAXDATA, ticket);
-    printf("Ticker content:\n%s", data);
+    printf("Ticket content:\n%s", data);
     
     fclose(ticket);
 }
