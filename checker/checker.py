@@ -140,7 +140,7 @@ class FlugChecker(BaseChecker):
 
         if flag2.strip() != self.flag.strip():
             nc.close()
-            raise BrokenServiceException("The flags dont mach! [getflag]")
+            raise BrokenServiceException("The flags don't mach! [getflag]")
 
         nc.close()
 
@@ -236,7 +236,7 @@ class FlugChecker(BaseChecker):
             raise BrokenServiceException("Unable to get noise from the service [getnoise]")
         if flag2.strip() != self.flag.strip().replace('\n',''):
             nc.close()
-            raise BrokenServiceException("The noises dont mach! [getnoise]")
+            raise BrokenServiceException("The noises don't mach! [getnoise]")
 
         """
         This method retrieves noise in the service.
@@ -376,7 +376,7 @@ class FlugChecker(BaseChecker):
             if elem not in logged_in_menu:
                 nc.close()
                 print('failed last test: \'{}\' not in menu'.format(elem))
-                raise BrokenServiceException('menu when logged isnt ok [havoc]')
+                raise BrokenServiceException("menu when logged isn't ok [havoc]")
 
         nc.close()
 
@@ -494,7 +494,7 @@ class FlugChecker(BaseChecker):
             telnet.read_until(b"================\n")
             telnet.read_until(b"================\n")
             telnet.write(b'4\n')
-            text = telnet.read_until(b'Welcome to the airport\n', timeout=self.time_remaining).decode().split('\n')
+            text = telnet.read_until(b'Welcome to the airport\n') timeout=self.time_remaining).decode().split('\n')
         except Exception as e:
             self.info("Failed to Check bookings", exc_info=e)
             telnet.close()
