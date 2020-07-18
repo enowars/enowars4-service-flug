@@ -140,7 +140,7 @@ class FlugChecker(BaseChecker):
 
         if flag2.strip() != self.flag.strip():
             nc.close()
-            raise BrokenServiceException("The flags dont mach! [getflag]")
+            raise BrokenServiceException("The flags dont match! [getflag]")
 
         nc.close()
 
@@ -356,7 +356,7 @@ class FlugChecker(BaseChecker):
         ticket_message = nc.read_until(b'\n').decode().lower()
         if 'the contents of your ticket' not in ticket_message:
             nc.close()
-            raise BrokenServiceException('Cannot input ticket in menu option 3')
+            raise BrokenServiceException('Can not input ticket in menu option 3')
 
 
         nc.read_until(b"================\n")
@@ -488,7 +488,6 @@ class FlugChecker(BaseChecker):
 
 
     def check_bookings(self, telnet):
-        print('still working')
         try:
             telnet.read_until(b"================\n")
             telnet.read_until(b"================\n")
@@ -501,7 +500,7 @@ class FlugChecker(BaseChecker):
             raise BrokenServiceException('User was not found')
             
         if not self.team_db[self.flag][0] in text:
-            self.info('user was not found')
+            self.info('User was not found')
             telnet.close()
             raise BrokenServiceException('User was not found')
         else:
