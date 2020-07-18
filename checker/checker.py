@@ -482,7 +482,6 @@ class FlugChecker(BaseChecker):
         print(flag)
 
 
-
     def gen_user(self): 
         source = list(ascii_lowercase)
         username =''
