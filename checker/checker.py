@@ -492,7 +492,6 @@ class FlugChecker(BaseChecker):
 
 
 
-
     def gen_password(self): 
         source = list(ascii_lowercase)
         password =''
